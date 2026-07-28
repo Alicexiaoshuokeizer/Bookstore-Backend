@@ -1,0 +1,13 @@
+spring:
+  config:
+    import: "optional:file:.env[.properties]"
+  application:
+    name: bookstore
+  datasource:
+    url: jdbc:mysql://localhost:3306/${DB_NAME}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+server:
+  port: 8080
