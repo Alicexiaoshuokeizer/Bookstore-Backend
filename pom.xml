@@ -8,8 +8,8 @@
 		<version>4.1.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.group5</groupId>
-	<artifactId>bookstore</artifactId>
+	<groupId>com.cfg</groupId>
+	<artifactId>BookStoreBackend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
 	<description/>
@@ -27,7 +27,7 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>21</java.version>
+		<java.version>25</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -59,23 +59,11 @@
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation -->
-        <!--Starter for using Java Bean Validation with Hibernate Validator-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-validation</artifactId>
-			<version>4.1.0</version>
-			<scope>compile</scope>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<scope>annotationProcessor</scope>
 		</dependency>
-
-		<!--OPENAPI sepc-->
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.5.0</version>
-		</dependency>
-
 	</dependencies>
 
 	<build>
