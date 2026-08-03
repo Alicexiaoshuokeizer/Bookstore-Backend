@@ -4,6 +4,7 @@ import com.cfg.BookStoreBackend.exception.DatabaseException;
 import com.cfg.BookStoreBackend.model.dto.BookDTO;
 import com.cfg.BookStoreBackend.model.entity.Book;
 import com.cfg.BookStoreBackend.model.repository.BookRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,11 +13,12 @@ import org.springframework.stereotype.Service;
 @Service
 // log info for debugging and tracking
 @Slf4j
+// constructor injection via lombok to indicate dependency of any final field variables
+@RequiredArgsConstructor
 public class BookService {
   // fields
     // create book repository for server to communicate with db
-    @Autowired
-    private BookRepository bookRepository;
+    private final BookRepository bookRepository;
 
   // methods
     // add new book to books table via bookRepository
