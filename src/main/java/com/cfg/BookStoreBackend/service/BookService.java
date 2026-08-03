@@ -27,8 +27,9 @@ public class BookService {
     public Book addBook(BookDTO bookDTO) throws DatabaseException {
         try {
             Book newBook = new Book();
-            newBook.setTitle(bookDTO.getTitle());
-            newBook.setAuthor(bookDTO.getAuthor());
+            //Input sanitation: trim extra space before and behind the string
+            newBook.setTitle(bookDTO.getTitle().trim());
+            newBook.setAuthor(bookDTO.getAuthor().trim());
             newBook.setPrice(bookDTO.getPrice());
             newBook.setStock(bookDTO.getStock());
             return bookRepository.save(newBook);
