@@ -6,7 +6,6 @@ import com.cfg.BookStoreBackend.model.entity.Book;
 import com.cfg.BookStoreBackend.model.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 // indicate this is a service component for spring
