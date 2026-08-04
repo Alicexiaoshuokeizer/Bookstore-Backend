@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 public class BookController {
@@ -31,4 +33,20 @@ public class BookController {
                 .body(bookService.addBook(bookDTO));
     }
 
+    // Put /api/books/{id]
+    // If it's successful, it'll find the book by id and update its details.
+    // It'll save the changes to the db and return 200 OK status with the updated book in response body.
+
+    // If the id doesn't exist it'll throw BookNotFoundException, handled by /exception/GlobalExceptionHandler
+    // and will return 404 Not Found status code with error message.
+
+    // If a different db error occurs, throws DatabaseException and returns 500 status code and general error message.
+    @PutMapping("/api/books/{id}")
+    public ResponseEntity<Book> updateBook(
+            @PathVariable Long id,
+            @Valid @RequestBody BookDTO bookDTO)
+            throws DatabaseException {
+
+        return ResponseEntity.ok(bookService.updateBook(id, bookDTO));
+    }
 }
