@@ -1,4 +1,79 @@
 package com.cfg.BookStoreBackend.service;
 
+import com.cfg.BookStoreBackend.exception.DatabaseException;
+import com.cfg.BookStoreBackend.exception.NotFoundException;
+import com.cfg.BookStoreBackend.model.dto.PurchaseRequestDTO;
+import com.cfg.BookStoreBackend.model.dto.PurchaseResponseDTO;
+import com.cfg.BookStoreBackend.model.entity.Book;
+import com.cfg.BookStoreBackend.model.entity.Customer;
+import com.cfg.BookStoreBackend.model.entity.Purchase;
+import com.cfg.BookStoreBackend.model.repository.BookRepository;
+import com.cfg.BookStoreBackend.model.repository.CustomerRepository;
+import com.cfg.BookStoreBackend.model.repository.PurchaseRepository;
+import com.cfg.BookStoreBackend.util.PurchaseStatus;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+
+// indicate this is a service component for spring
+@Service
+// log info for debugging and tracking
+@Slf4j
+// constructor injection via lombok to indicate dependency of any final field variables
+@RequiredArgsConstructor
 public class PurchaseService {
+    // fields
+    // create purchase, customer and book repository for server to communicate with db
+    private final PurchaseRepository purchaseRepository;
+    private final CustomerRepository customerRepository;
+    private final BookRepository bookRepository;
+
+  // methods
+    // add new purchase to purchases table via purchaseRepository
+    // if success, returns purchaseResponseDTO class object of the newly added purchase
+    // if fails, rollback whole process and throw Exception
+    @Transactional
+    public PurchaseResponseDTO makePurchase(PurchaseRequestDTO requestDTO)
+            throws NotFoundException, IllegalStateException, DatabaseException
+    {
+        // verify customer id
+        Customer customer = customerRepository
+                .findById(requestDTO.getCustomerId())
+                .orElseThrow(()-> new NotFoundException("Customer not found with id: " + requestDTO.getCustomerId()));
+
+        // verify book id
+        Book book = bookRepository
+                .findById(requestDTO.getBookId())
+                .orElseThrow(() -> new NotFoundException("Book not found with id: " + requestDTO.getBookId()));
+        // verify amount of purchase is <= stock in book
+
+        if (book.getStock() <= 0) {
+            throw new IllegalStateException("Book is out of stock with title: " + book.getTitle());
+        }
+
+        // reduce book stock by 1
+        book.setStock(book.getStock() - 1);
+
+        // make purchase entity instance for db storing process
+        Purchase purchase = new Purchase();
+        purchase.setBook(book);
+        purchase.setCustomer(customer);
+        purchase.setAmount(requestDTO.getAmount());
+        purchase.setDate(LocalDateTime.now());
+        purchase.setStatus(PurchaseStatus.CONFIRMED);
+
+        // store new purchase in purchases table
+        // convert saved purchase to purchaseResponseDTO and return it
+        try {
+            Purchase saved = purchaseRepository.save(purchase);
+            return PurchaseResponseDTO.toResponseDTO(saved);
+        }
+        catch (Exception e) {
+            log.error("Failed to save purchase to db: {}", e.getMessage());
+            throw new DatabaseException("Failed to saved purchase");
+        }
+    }
 }

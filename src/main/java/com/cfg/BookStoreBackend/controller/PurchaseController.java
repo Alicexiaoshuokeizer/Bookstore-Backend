@@ -1,15 +1,22 @@
 package com.cfg.BookStoreBackend.controller;
 
-import com.cfg.BookStoreBackend.model.entity.Purchase;
+import com.cfg.BookStoreBackend.model.dto.PurchaseRequestDTO;
+import com.cfg.BookStoreBackend.model.dto.PurchaseResponseDTO;
+import com.cfg.BookStoreBackend.service.PurchaseService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 public class PurchaseController {
+    private final PurchaseService purchaseService;
 
     @PostMapping("/api/purchases")
-    public ResponseEntity<Purchase> makePurchase() {
-        return null;
+    public ResponseEntity<PurchaseResponseDTO> makePurchase(PurchaseRequestDTO requestDTO) {
+        return ResponseEntity
+                .status(201)
+                .body(purchaseService.makePurchase(requestDTO));
     }
 }
