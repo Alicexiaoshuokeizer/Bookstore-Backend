@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class BookServiceTest {
 
-    // Creates fake BookRepository so the test doesn't use a real DB.
+    // Creates a mock BookRepository so the test doesn't use a real DB.
     @Mock
     private BookRepository bookRepository;
 
@@ -31,8 +31,8 @@ class BookServiceTest {
 
     // PUT test, update book should update an existing book.
     @Test
-    void updateBookShouldUpdateExistingBook() throws Exception {
-        // Creates a fake book that the fake repo will return
+    void updateBookShouldUpdateExistingBook() throws DatabaseException {
+        // Creates a book that the mock repo will return
         Book existingBook = new Book();
         existingBook.setId(1L);
         existingBook.setTitle("Old title");
@@ -40,7 +40,7 @@ class BookServiceTest {
         existingBook.setPrice(10.00);
         existingBook.setStock(2);
 
-        // PUT endpoint updates fake book details
+        // PUT endpoint updates the book details
         BookDTO updateRequest = new BookDTO();
         updateRequest.setTitle("New title");
         updateRequest.setAuthor("New author");
@@ -101,7 +101,7 @@ class BookServiceTest {
     // PUT test, update book should throw db exception when the save fails.
     @Test
     void updateBookShouldThrowDatabaseExceptionWhenSaveFails() {
-        // Creates fake book
+        // Creates a book
         Book existingBook = new Book();
         existingBook.setId(1L);
         existingBook.setTitle("Old title");
@@ -109,7 +109,7 @@ class BookServiceTest {
         existingBook.setPrice(10.00);
         existingBook.setStock(2);
 
-        // PUT endpoint updates fake book details
+        // PUT endpoint updates the book details
         BookDTO updateRequest = new BookDTO();
         updateRequest.setTitle("New title");
         updateRequest.setAuthor("New author");
