@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import com.cfg.BookStoreBackend.model.dto.BookResponseDTO;
 
 @RestController
 public class BookController {
@@ -42,7 +43,7 @@ public class BookController {
 
     // If a different db error occurs, throws DatabaseException and returns 500 status code and general error message.
     @PutMapping("/api/books/{id}")
-    public ResponseEntity<Book> updateBook(
+    public ResponseEntity<BookResponseDTO> updateBook(
             @PathVariable Long id,
             @Valid @RequestBody BookDTO bookDTO)
             throws DatabaseException {
