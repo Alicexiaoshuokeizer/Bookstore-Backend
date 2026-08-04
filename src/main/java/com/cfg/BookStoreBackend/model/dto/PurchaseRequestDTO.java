@@ -26,12 +26,7 @@ public class PurchaseRequestDTO {
     @PositiveOrZero
     private Double amount;
 
-    // validate date, it must not be null
-    // the purchase data must be past or present date
-    @NotNull
-    @PastOrPresent
-    private LocalDateTime date;
-
+    // date of purchase is defined by the server-side service when the purchase is actually written in db
     // status of purchase is not included in this DTO
     // because only server-side can update the status to avoid input pollution
 }
