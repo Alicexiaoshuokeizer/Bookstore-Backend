@@ -1,5 +1,6 @@
 package com.cfg.BookStoreBackend.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,6 +17,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .internalServerError()
                 .body("An error occurred while accessing the database");
+    }
+
+    // catch NotFoundException that occurs in endpoints
+    // response sends 404 not found status code
+    // response also sends an endpoint customized not found message
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleNotFoundException(NotFoundException e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(e.getMessage());
     }
 
 }
