@@ -34,7 +34,7 @@ public class BookController {
                 .body(bookService.addBook(bookDTO));
     }
 
-    // Put /api/books/{id]
+    // Put /api/books/{id}
     // If it's successful, it'll find the book by id and update its details.
     // It'll save the changes to the db and return 200 OK status with the updated book in response body.
 
