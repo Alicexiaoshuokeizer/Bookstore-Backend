@@ -24,7 +24,7 @@ public class PurchaseRequestDTO {
     // validate amount, must be >= 0
     // use BigDecimal for money to make sure decimal precision
     @PositiveOrZero
-    private BigDecimal amount;
+    private Double amount;
 
     // validate date, it must not be null
     // the purchase data must be past or present date
