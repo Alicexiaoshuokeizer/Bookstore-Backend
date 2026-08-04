@@ -25,7 +25,7 @@ public class BookService {
     // add new book to books table via bookRepository
     // if success, returns Book class object of the newly added book
     // if fails, returns log error info in console and throw InternalServerError error
-    public Book addBook(BookDTO bookDTO) throws DatabaseException {
+    public BookResponseDTO addBook(BookDTO bookDTO) throws DatabaseException {
         try {
             Book newBook = new Book();
             //Input sanitation: trim extra space before and behind the string
@@ -33,7 +33,16 @@ public class BookService {
             newBook.setAuthor(bookDTO.getAuthor().trim());
             newBook.setPrice(bookDTO.getPrice());
             newBook.setStock(bookDTO.getStock());
-            return bookRepository.save(newBook);
+
+            // save new book
+            Book saved = bookRepository.save(newBook);
+            return new BookResponseDTO(
+                    saved.getId(),
+                    saved.getTitle(),
+                    saved.getAuthor(),
+                    saved.getPrice(),
+                    saved.getStock()
+            );
         }
         catch (Exception ex) {
             // log message for internal tracking and debugging
