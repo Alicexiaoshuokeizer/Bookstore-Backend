@@ -29,4 +29,17 @@ public class GlobalExceptionHandler {
                 .body(e.getMessage());
     }
 
+    // catch IllegalStateException that occurs when book is out of stock
+    // response sends 409 Conflict client error indicates a request
+    // conflict with the current state of the target resource
+    // response sends an endpoint customized not out of stock message
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(e.getMessage());
+    }
+
+
+
 }
