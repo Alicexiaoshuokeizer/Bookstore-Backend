@@ -48,5 +48,5 @@ public class Purchase {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private PurchaseStatus status;
+    private PurchaseStatus status = PurchaseStatus.PENDING;
 }
