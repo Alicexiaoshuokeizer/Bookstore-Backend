@@ -50,4 +50,17 @@ public class BookController {
 
         return ResponseEntity.ok(bookService.updateBook(id, bookDTO));
     }
+
+    // DELETE /api/books/{id}
+    // If successful, deletes the book from the database and returns a 204 No Content status.
+    // If the ID doesn't exist, it throws BookNotFoundException (handled by GlobalExceptionHandler for a 404).
+    // If a database error occurs, it throws DatabaseException (handled for a 500).
+    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
+        bookService.deleteBook(id);
+        return ResponseEntity
+                .noContent() // Visual Anchor: Returns HTTP 204 No Content status code
+                .build();
+    }
+
 }
