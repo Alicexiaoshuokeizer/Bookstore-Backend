@@ -1,13 +1,10 @@
 package com.cfg.BookStoreBackend.model.dto;
 
+import com.cfg.BookStoreBackend.model.entity.Purchase;
 import com.cfg.BookStoreBackend.util.PurchaseStatus;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
-
 
 @Data
 @NoArgsConstructor
@@ -19,5 +16,18 @@ public class PurchaseResponseDTO {
     private Double amount;
     private LocalDateTime date;
     private PurchaseStatus status;
+
+    public static PurchaseResponseDTO toResponseDTO(Purchase purchase) {
+        // map purchase to PurchaseResponseDTO
+        PurchaseResponseDTO dto = new PurchaseResponseDTO();
+        dto.setId(purchase.getId());
+        dto.setBookId(purchase.getBook().getId());
+        dto.setCustomerId(purchase.getCustomer().getId());
+        dto.setAmount(purchase.getAmount());
+        dto.setDate(purchase.getDate());
+        dto.setStatus(purchase.getStatus());
+
+        return dto;
+    }
 
 }
