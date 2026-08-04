@@ -1,9 +1,5 @@
 package com.cfg.BookStoreBackend.model.dto;
 
-import com.cfg.BookStoreBackend.util.PurchaseStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.PositiveOrZero;
