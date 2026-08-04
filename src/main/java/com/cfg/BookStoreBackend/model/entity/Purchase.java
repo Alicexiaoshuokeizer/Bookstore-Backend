@@ -20,15 +20,17 @@ public class Purchase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // column: book_id, it must not be null
+    // column: book_id, it must not be null, ManyToOne relationship foreign key, only load the data needed
     @NotNull
-    @Column(name = "book_id", nullable = false)
-    private Long bookId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id", nullable = false)
+    private Book book;
 
     // column: customer_id, it must not be null
     @NotNull
-    @Column(name = "customer_id", nullable = false)
-    private Long customerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
 
     // column: amount, must be >= 0
     @PositiveOrZero
