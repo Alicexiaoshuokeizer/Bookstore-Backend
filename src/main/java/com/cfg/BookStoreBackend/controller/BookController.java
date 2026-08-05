@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.cfg.BookStoreBackend.model.dto.BookResponseDTO;
+import org.springframework.web.bind.annotation.DeleteMapping; // Added clean import for DeleteMapping
 
 @RestController
 public class BookController {
@@ -55,8 +56,8 @@ public class BookController {
     // If successful, deletes the book from the database and returns a 204 No Content status.
     // If the ID doesn't exist, it throws BookNotFoundException (handled by GlobalExceptionHandler for a 404).
     // If a database error occurs, it throws DatabaseException (handled for a 500).
-    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
+    @DeleteMapping("/api/books/{id}") // Fixed path string and inline package reference
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id) throws DatabaseException {
         bookService.deleteBook(id);
         return ResponseEntity
                 .noContent() // Visual Anchor: Returns HTTP 204 No Content status code
