@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 // indicate this is a service component for spring
@@ -48,20 +49,24 @@ public class PurchaseService {
         Book book = bookRepository
                 .findById(requestDTO.getBookId())
                 .orElseThrow(() -> new NotFoundException("Book not found with id: " + requestDTO.getBookId()));
-        // verify amount of purchase is <= stock in book
 
-        if (book.getStock() <= 0) {
+        // verify quantity to be ordered is <= stock in book
+        int quantityOrdered = requestDTO.getQuantity();
+        if (book.getStock() <= quantityOrdered) {
             throw new IllegalStateException("Book is out of stock with title: " + book.getTitle());
         }
 
         // reduce book stock by 1
-        book.setStock(book.getStock() - 1);
+        book.setStock(book.getStock() - quantityOrdered);
 
         // make purchase entity instance for db storing process
         Purchase purchase = new Purchase();
         purchase.setBook(book);
         purchase.setCustomer(customer);
-        purchase.setAmount(requestDTO.getAmount());
+        purchase.setQuantity(quantityOrdered);
+        // use BigDecimal.valueOf temporally to address book price is Double type
+        // change it when book price data type is changed to BigDecimal
+        purchase.setAmount(BigDecimal.valueOf(book.getPrice() * quantityOrdered));
         purchase.setDate(LocalDateTime.now());
         purchase.setStatus(PurchaseStatus.CONFIRMED);
 
