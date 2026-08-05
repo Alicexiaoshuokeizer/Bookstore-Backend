@@ -2,6 +2,7 @@ package com.cfg.BookStoreBackend.service;
 
 import com.cfg.BookStoreBackend.exception.DatabaseException;
 import com.cfg.BookStoreBackend.exception.NotFoundException;
+import com.cfg.BookStoreBackend.exception.OutOfStockException;
 import com.cfg.BookStoreBackend.model.dto.PurchaseRequestDTO;
 import com.cfg.BookStoreBackend.model.dto.PurchaseResponseDTO;
 import com.cfg.BookStoreBackend.model.entity.Book;
@@ -38,7 +39,7 @@ public class PurchaseService {
     // if fails, rollback whole process and throw Exception
     @Transactional
     public PurchaseResponseDTO makePurchase(PurchaseRequestDTO requestDTO)
-            throws NotFoundException, IllegalStateException, DatabaseException
+            throws NotFoundException, OutOfStockException, DatabaseException
     {
         // verify customer id
         Customer customer = customerRepository
@@ -53,7 +54,7 @@ public class PurchaseService {
         // verify quantity to be ordered is <= stock in book
         int quantityOrdered = requestDTO.getQuantity();
         if (book.getStock() <= quantityOrdered) {
-            throw new IllegalStateException("Book is out of stock with title: " + book.getTitle());
+            throw new OutOfStockException("Book is out of stock with title: " + book.getTitle());
         }
 
         // reduce book stock by 1
