@@ -24,6 +24,9 @@ CREATE TABLE IF NOT EXISTS purchases (
                                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                          book_id BIGINT NOT NULL,
                                          customer_id BIGINT NOT NULL,
+                                      -- quantity: Tracks how many copies are ordered
+                                         quantity INT NOT NULL,
+                                      -- amount: The final total price paid for the transaction.
                                          amount DECIMAL(10,2) NOT NULL,
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(50) NOT NULL,

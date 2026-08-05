@@ -4,9 +4,12 @@ import com.cfg.BookStoreBackend.util.PurchaseStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -32,10 +35,16 @@ public class Purchase {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    // column: amount, must be >= 0
+    // column : quantity, it must be > 0
+    @Positive
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
+
+    // column: amount, must be >= 0, price can be 0 because there are case that some books are free
+    // use BigDecimal for money to make sure decimal precision
     @PositiveOrZero
     @Column(name = "amount", nullable = false)
-    private Double amount;
+    private BigDecimal amount;
 
     // column: date, it must not be null
     // the purchase data must be past or present date
