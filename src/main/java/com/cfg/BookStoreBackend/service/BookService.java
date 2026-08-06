@@ -7,7 +7,7 @@ import com.cfg.BookStoreBackend.model.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import com.cfg.BookStoreBackend.exception.BookNotFoundException;
+import com.cfg.BookStoreBackend.exception.NotFoundException;
 import com.cfg.BookStoreBackend.model.dto.BookResponseDTO;
 
 // indicate this is a service component for spring
@@ -45,13 +45,13 @@ public class BookService {
 
     // Updates existing book via bookRepository.
     // If successful, finds, updates and saves the changes and returns the updated book object.
-    // If book doesn't exist, throws BookNotFoundException.
+    // If book doesn't exist, throws NotFoundException.
     // If another error occurs, logs error and throws DatabaseException.
     public BookResponseDTO updateBook(Long id, BookDTO bookDTO) throws DatabaseException {
         try {
             // Retrieves existing book from db by id.
             Book existingBook = bookRepository.findById(id)
-                    .orElseThrow(() -> new BookNotFoundException(id));
+                    .orElseThrow(() -> new NotFoundException("Book not found with id: " + id));
 
             // Updates existing book with new values.
             existingBook.setTitle(bookDTO.getTitle().trim());
@@ -70,7 +70,7 @@ public class BookService {
                     updatedBook.getStock()
             );
         }
-        catch (BookNotFoundException ex) {
+        catch (NotFoundException ex) {
             // Log for missing book
             log.warn("Book update failed: {}", ex.getMessage());
             throw ex;

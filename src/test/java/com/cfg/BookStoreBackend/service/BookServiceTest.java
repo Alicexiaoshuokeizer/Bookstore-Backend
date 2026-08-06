@@ -1,6 +1,6 @@
 package com.cfg.BookStoreBackend.service;
 
-import com.cfg.BookStoreBackend.exception.BookNotFoundException;
+import com.cfg.BookStoreBackend.exception.NotFoundException;
 import com.cfg.BookStoreBackend.exception.DatabaseException;
 import com.cfg.BookStoreBackend.model.dto.BookDTO;
 import com.cfg.BookStoreBackend.model.dto.BookResponseDTO;
@@ -69,9 +69,9 @@ class BookServiceTest {
         verify(bookRepository).save(existingBook);
     }
 
-    // PUT test, update book should throw book not found exception for when book doesn't exist.
+    // PUT test, update book should throw not found exception for when book doesn't exist.
     @Test
-    void updateBookShouldThrowBookNotFoundExceptionWhenBookDoesNotExist() {
+    void updateBookShouldThrowNotFoundExceptionWhenBookDoesNotExist() {
         // Repo returns no book for this ID
         when(bookRepository.findById(999L))
                 .thenReturn(Optional.empty());
@@ -83,8 +83,8 @@ class BookServiceTest {
         updateRequest.setStock(5);
 
         // Checks the correct exception is thrown
-        BookNotFoundException exception = assertThrows(
-                BookNotFoundException.class,
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
                 () -> bookService.updateBook(999L, updateRequest)
         );
 
