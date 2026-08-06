@@ -87,17 +87,34 @@ public class BookService {
                     updatedBook.getPrice(),
                     updatedBook.getStock()
             );
-        }
-        catch (BookNotFoundException ex) {
+        } catch (BookNotFoundException ex) {
             // Log for missing book
             log.warn("Book update failed: {}", ex.getMessage());
             throw ex;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             // Throws exception for /exception/GlobalExceptionHandler
             // to handle and send 500 status code response.
             log.error("Failed to update book {}: {}", id, ex.getMessage());
             throw new DatabaseException("Failed to update book");
+        }
+    }
+
+    // Deletes an existing book via bookRepository by its ID.
+    // If the book doesn't exist, throws BookNotFoundException.
+    // If a database access error occurs, logs the error and throws DatabaseException.
+    public void deleteBook(Long id) throws DatabaseException {
+        // Look for the book first. If missing, throw our custom exception to trigger a 404.
+        if (!bookRepository.existsById(id)) {
+            log.warn("Book deletion failed: Book not found with id: {}", id);
+            throw new BookNotFoundException(id);
+        }
+
+        try {
+            bookRepository.deleteById(id);
+            log.info("Successfully deleted book with id: {}", id);
+        } catch (Exception ex) {
+            log.error("Failed to delete book {}: {}", id, ex.getMessage());
+            throw new DatabaseException("Failed to delete book");
         }
     }
 

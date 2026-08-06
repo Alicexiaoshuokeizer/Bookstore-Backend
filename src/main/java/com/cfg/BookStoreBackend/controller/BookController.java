@@ -5,7 +5,6 @@ import com.cfg.BookStoreBackend.exception.DatabaseException;
 import com.cfg.BookStoreBackend.model.dto.BookDTO;
 import com.cfg.BookStoreBackend.model.dto.ReturnBookRequestDTO;
 import com.cfg.BookStoreBackend.model.dto.ReturnBookResponseDTO;
-import com.cfg.BookStoreBackend.model.entity.Book;
 import com.cfg.BookStoreBackend.service.BookService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.cfg.BookStoreBackend.model.dto.BookResponseDTO;
+import org.springframework.web.bind.annotation.DeleteMapping; // Added clean import for DeleteMapping
 
 @RestController
 public class BookController {
@@ -61,6 +61,19 @@ public class BookController {
     public ResponseEntity<ReturnBookResponseDTO> returnBook(@Valid @RequestBody ReturnBookRequestDTO dto) {
         return ResponseEntity
                 .ok(bookService.returnBook(dto));
+    }
+
+
+    // DELETE /api/books/{id}
+    // If successful, deletes the book from the database and returns a 204 No Content status.
+    // If the ID doesn't exist, it throws BookNotFoundException (handled by GlobalExceptionHandler for a 404).
+    // If a database error occurs, it throws DatabaseException (handled for a 500).
+    @DeleteMapping("/api/books/{id}") // Fixed path string and inline package reference
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id) throws DatabaseException {
+        bookService.deleteBook(id);
+        return ResponseEntity
+                .noContent() // Visual Anchor: Returns HTTP 204 No Content status code
+                .build();
     }
 
 }
