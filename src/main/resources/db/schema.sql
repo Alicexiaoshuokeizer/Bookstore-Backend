@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS books (
 
 -- 3. Consumer Data Registry Table
 CREATE TABLE IF NOT EXISTS customers (
-                                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                            id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                          name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

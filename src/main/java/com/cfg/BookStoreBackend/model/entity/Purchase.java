@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Table(name = "purchases")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Purchase {
 
     // auto-increment primary key id column of the purchases table
