@@ -6,5 +6,7 @@ public enum PurchaseStatus {
     // CONFIRMED: paid, waiting for shipping
     CONFIRMED,
     // RETURN: book returned
-    RETURN
+    RETURN,
+    // REFUNDED: purchase refunded
+    REFUNDED
 }
