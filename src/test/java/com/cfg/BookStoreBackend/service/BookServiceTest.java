@@ -14,8 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -133,5 +132,39 @@ class BookServiceTest {
 
         verify(bookRepository).findById(1L);
         verify(bookRepository).save(existingBook);
+    }
+
+    // DELETE test, delete book should succeed when the book exists in the database.
+    @Test
+    void deleteBookShouldSucceedWhenBookExists() throws DatabaseException {
+        // Arrange: Tell the mock repository to report that the book ID exists
+        when(bookRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(bookRepository).deleteById(1L);
+
+        // Act & Assert: Execute the service call and verify it completes without errors
+        assertDoesNotThrow(() -> bookService.deleteBook(1L));
+
+        // Verify that the repository interactions happened exactly once
+        verify(bookRepository, times(1)).existsById(1L);
+        verify(bookRepository, times(1)).deleteById(1L);
+    }
+
+    // DELETE test, delete book should throw book not found exception when the ID is missing.
+    @Test
+    void deleteBookShouldThrowBookNotFoundExceptionWhenIdDoesNotExist() {
+        // Arrange: Force the repository to state the ID is missing from MySQL
+        when(bookRepository.existsById(999L)).thenReturn(false);
+
+        // Act & Assert: Verify it bubbles up your custom 404 tracking exception
+        BookNotFoundException exception = assertThrows(
+                BookNotFoundException.class,
+                () -> bookService.deleteBook(999L)
+        );
+
+        assertEquals("Book not found with id: 999", exception.getMessage());
+
+        // Verify existence was checked but the deletion execution was safely skipped
+        verify(bookRepository, times(1)).existsById(999L);
+        verify(bookRepository, never()).deleteById(anyLong());
     }
 }

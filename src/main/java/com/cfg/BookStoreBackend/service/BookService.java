@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import com.cfg.BookStoreBackend.exception.NotFoundException;
 import com.cfg.BookStoreBackend.model.dto.BookResponseDTO;
 
+// Temporary import: remove once deleteBook is changed to NotFoundException
+import com.cfg.BookStoreBackend.exception.BookNotFoundException;
+
 // indicate this is a service component for spring
 @Service
 // log info for debugging and tracking
@@ -17,11 +20,11 @@ import com.cfg.BookStoreBackend.model.dto.BookResponseDTO;
 // constructor injection via lombok to indicate dependency of any final field variables
 @RequiredArgsConstructor
 public class BookService {
-  // fields
+    // fields
     // create book repository for server to communicate with db
     private final BookRepository bookRepository;
 
-  // methods
+    // methods
     // add new book to books table via bookRepository
     // if success, returns Book class object of the newly added book
     // if fails, returns log error info in console and throw InternalServerError error
@@ -34,8 +37,7 @@ public class BookService {
             newBook.setPrice(bookDTO.getPrice());
             newBook.setStock(bookDTO.getStock());
             return bookRepository.save(newBook);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             // log message for internal tracking and debugging
             log.error("Failed to add book: {}", ex.getMessage());
             // throw exception for /exception/GlobalExceptionHandler to handle and send 500 status code response
@@ -70,12 +72,13 @@ public class BookService {
                     updatedBook.getStock()
             );
         }
+
         catch (NotFoundException ex) {
             // Log for missing book
             log.warn("Book update failed: {}", ex.getMessage());
             throw ex;
-        }
-        catch (Exception ex) {
+
+        } catch (Exception ex) {
             // Throws exception for /exception/GlobalExceptionHandler
             // to handle and send 500 status code response.
             log.error("Failed to update book {}: {}", id, ex.getMessage());
@@ -83,4 +86,25 @@ public class BookService {
         }
     }
 
+    // Deletes an existing book via bookRepository by its ID.
+    // If the book doesn't exist, throws BookNotFoundException.
+    // If a database access error occurs, logs the error and throws DatabaseException.
+    public void deleteBook(Long id) throws DatabaseException {
+        // Look for the book first. If missing, throw our custom exception to trigger a 404.
+        if (!bookRepository.existsById(id)) {
+            log.warn("Book deletion failed: Book not found with id: {}", id);
+            throw new BookNotFoundException(id);
+        }
+
+        try {
+            bookRepository.deleteById(id);
+            log.info("Successfully deleted book with id: {}", id);
+        } catch (Exception ex) {
+            log.error("Failed to delete book {}: {}", id, ex.getMessage());
+            throw new DatabaseException("Failed to delete book");
+        }
+
+    }
 }
+
+
