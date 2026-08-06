@@ -67,7 +67,7 @@ public class PurchaseService {
         purchase.setQuantity(quantityOrdered);
         // use BigDecimal.valueOf temporally to address book price is Double type
         // change it when book price data type is changed to BigDecimal
-        purchase.setAmount(BigDecimal.valueOf(book.getPrice() * quantityOrdered));
+        purchase.setTransactionPrice(BigDecimal.valueOf(book.getPrice() * quantityOrdered));
         purchase.setDate(LocalDateTime.now());
         purchase.setStatus(PurchaseStatus.CONFIRMED);
 

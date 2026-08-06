@@ -16,7 +16,7 @@ public class PurchaseResponseDTO {
     private Long bookId;
     private Long customerId;
     private Integer quantity;
-    private BigDecimal amount;
+    private BigDecimal transactionPrice;
     private LocalDateTime date;
     private PurchaseStatus status;
 
@@ -27,7 +27,7 @@ public class PurchaseResponseDTO {
         dto.setBookId(purchase.getBook().getId());
         dto.setCustomerId(purchase.getCustomer().getId());
         dto.setQuantity(purchase.getQuantity());
-        dto.setAmount(purchase.getAmount());
+        dto.setTransactionPrice(purchase.getTransactionPrice());
         dto.setDate(purchase.getDate());
         dto.setStatus(purchase.getStatus());
 

@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS purchases (
                                          customer_id BIGINT NOT NULL,
                                       -- quantity: Tracks how many copies are ordered
                                          quantity INT NOT NULL,
-                                      -- amount: The final total price paid for the transaction.
-                                         amount DECIMAL(10,2) NOT NULL,
+                                      -- transaction_price: The final total price paid for the transaction.
+                                         transaction_price DECIMAL(10,2) NOT NULL,
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(50) NOT NULL,
     FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE RESTRICT,

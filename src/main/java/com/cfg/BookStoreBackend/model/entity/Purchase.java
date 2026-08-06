@@ -45,8 +45,8 @@ public class Purchase {
     // column: amount, must be >= 0, price can be 0 because there are case that some books are free
     // use BigDecimal for money to make sure decimal precision
     @PositiveOrZero
-    @Column(name = "amount", nullable = false)
-    private BigDecimal amount;
+    @Column(name = "transaction_price", nullable = false)
+    private BigDecimal transactionPrice;
 
     // column: date, it must not be null
     // the purchase data must be past or present date
