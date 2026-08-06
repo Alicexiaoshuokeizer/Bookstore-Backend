@@ -22,12 +22,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BookNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleBookNotFoundException(BookNotFoundException ex) {
+    public ResponseEntity<Map<String, Object>> handleBookNotFoundException(BookNotFoundException e) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", 404);
         body.put("error", "Not Found");
-        body.put("message", ex.getMessage());
+        body.put("message", e.getMessage());
 
         return ResponseEntity
                 .status(404)
@@ -54,6 +54,16 @@ public class GlobalExceptionHandler {
                 .body(e.getMessage());
     }
 
+    // catch DuplicateRefundException that occurs when a purchase is already refunded
+    // response sends 409 Conflict client error indicates a request
+    // conflict with the current state of the target resource
+    // response sends an endpoint customized already refunded message
+    @ExceptionHandler(DuplicateRefundException.class)
+    public ResponseEntity<String> handleDuplicateRefundException(DuplicateRefundException e) {
+        return ResponseEntity
+                .status(409)
+                .body(e.getMessage());
+    }
 
 
 }
