@@ -20,6 +20,22 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Purchase {
 
+    public Purchase(
+            Book book,
+            Customer customer,
+            int quantityOrdered,
+            BigDecimal transactionPrice,
+            LocalDateTime date,
+            PurchaseStatus status) {
+
+        this.book = book;
+        this.customer = customer;
+        this.quantity = quantityOrdered;
+        this.transactionPrice = transactionPrice;
+        this.date = date;
+        this.status = status;
+    }
+
     // auto-increment primary key id column of the purchases table
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

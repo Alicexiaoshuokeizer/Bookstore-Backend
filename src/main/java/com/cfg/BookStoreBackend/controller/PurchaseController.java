@@ -2,7 +2,6 @@ package com.cfg.BookStoreBackend.controller;
 
 import com.cfg.BookStoreBackend.model.dto.PurchaseRequestDTO;
 import com.cfg.BookStoreBackend.model.dto.PurchaseResponseDTO;
-import com.cfg.BookStoreBackend.model.entity.Purchase;
 import com.cfg.BookStoreBackend.service.PurchaseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +28,7 @@ public class PurchaseController {
     }
 
     @PutMapping("/{id}/refund")
-    public ResponseEntity<Purchase> refundPurchaseOrder(@PathVariable Long id) {
-        Purchase processedRefund = purchaseService.refundPurchase(id);
-        return ResponseEntity.ok(processedRefund);
+    public ResponseEntity<PurchaseResponseDTO> refundPurchaseOrder(@PathVariable Long id) {
+        return ResponseEntity.ok(purchaseService.refundPurchase(id));
     }
 }

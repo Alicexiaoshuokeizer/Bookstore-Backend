@@ -1,6 +1,7 @@
 package com.cfg.BookStoreBackend.service;
 
 import com.cfg.BookStoreBackend.exception.DatabaseException;
+import com.cfg.BookStoreBackend.exception.DuplicateRefundException;
 import com.cfg.BookStoreBackend.exception.NotFoundException;
 import com.cfg.BookStoreBackend.exception.OutOfStockException;
 import com.cfg.BookStoreBackend.model.dto.PurchaseRequestDTO;
@@ -44,37 +45,46 @@ public class PurchaseService {
         // verify customer id
         Customer customer = customerRepository
                 .findById(requestDTO.getCustomerId())
-                .orElseThrow(()-> new NotFoundException("Customer not found with id: " + requestDTO.getCustomerId()));
+                .orElseThrow(()-> {
+                    log.warn("New purchase failed: customer not found with id: {}", requestDTO.getCustomerId());
+                    return new NotFoundException("Customer not found with id: " + requestDTO.getCustomerId());
+                });
 
         // verify book id
         Book book = bookRepository
                 .findById(requestDTO.getBookId())
-                .orElseThrow(() -> new NotFoundException("Book not found with id: " + requestDTO.getBookId()));
+                .orElseThrow(() -> {
+                    log.warn("New purchase failed: book not found with id: {}", requestDTO.getBookId());
+                    return new NotFoundException("Book not found with id: " + requestDTO.getBookId());
+                });
 
         // verify quantity to be ordered is <= stock in book
         int quantityOrdered = requestDTO.getQuantity();
         if (book.getStock() <= quantityOrdered) {
-            throw new OutOfStockException("Book is out of stock with title: " + book.getTitle());
+            log.warn("New purchase failed: stock insufficiency book id: {}, quantity ordered: {}", requestDTO.getBookId(), quantityOrdered);
+            throw new OutOfStockException("Book has not sufficient stock with title: " + book.getTitle());
         }
 
         // reduce book stock by 1
         book.setStock(book.getStock() - quantityOrdered);
 
         // make purchase entity instance for db storing process
-        Purchase purchase = new Purchase();
-        purchase.setBook(book);
-        purchase.setCustomer(customer);
-        purchase.setQuantity(quantityOrdered);
-        // use BigDecimal.valueOf temporally to address book price is Double type
-        // change it when book price data type is changed to BigDecimal
-        purchase.setTransactionPrice(BigDecimal.valueOf(book.getPrice() * quantityOrdered));
-        purchase.setDate(LocalDateTime.now());
-        purchase.setStatus(PurchaseStatus.CONFIRMED);
+        Purchase purchase = new Purchase(
+                book,
+                customer,
+                quantityOrdered,
+                // use BigDecimal.valueOf temporally to address book price is Double type
+                // change it when book price data type is changed to BigDecimal
+                BigDecimal.valueOf(book.getPrice() * quantityOrdered),
+                LocalDateTime.now(),
+                PurchaseStatus.CONFIRMED
+        );
 
         // store new purchase in purchases table
         // convert saved purchase to purchaseResponseDTO and return it
         try {
             Purchase saved = purchaseRepository.save(purchase);
+            log.info("New purchase save successfully with id: {}", saved.getId());
             return PurchaseResponseDTO.toResponseDTO(saved);
         }
         catch (Exception e) {
@@ -85,7 +95,9 @@ public class PurchaseService {
 
 
     @Transactional
-    public Purchase refundPurchase(Long id) {
+    public PurchaseResponseDTO refundPurchase(Long id)
+            throws NotFoundException, DuplicateRefundException, DatabaseException
+    {
         // 1. Fetching & Business Input Validation (Kept clean outside of infrastructure error catching)
         Purchase purchase = purchaseRepository.findById(id)
                 .orElseThrow(() -> {
@@ -96,31 +108,15 @@ public class PurchaseService {
         // Block duplicate refund triggers cleanly before starting database transaction writes
         if (purchase.getStatus() == PurchaseStatus.REFUNDED) {
             log.warn("Refund rejected: Purchase id {} is already refunded", id);
-            throw new DatabaseException("This purchase has already been fully refunded");
+            throw new DuplicateRefundException("This purchase has already been fully refunded");
         }
 
         // 2. Pure Database Update & Save Operations
         try {
             purchase.setStatus(PurchaseStatus.REFUNDED);
             Purchase updatedPurchase = purchaseRepository.save(purchase);
-
-            // TODO delete this part, duplicates with the logic of return book endpoint
-//            // Locate corresponding inventory item to credit back stock allocation
-//            Book associatedBook = bookRepository.findById(purchase.getBookId())
-//                    .orElseThrow(() -> new NotFoundException("Book not found with id: " + purchase.getBookId()));
-//
-//            associatedBook.setStock(associatedBook.getStock() + 1);
-//            bookRepository.save(associatedBook);
-
             log.info("Successfully processed refund for purchase ID {}", id);
-            return updatedPurchase;
-
-            // TODO delete this part as the book restock logic also needed to be deleted
-//        }
-//        catch (NotFoundException ex) {
-//            // Bypass block: Catch and rethrow NotFoundException so it bypasses the 500 error catch-all below
-//            throw ex;
-
+            return PurchaseResponseDTO.toResponseDTO(updatedPurchase);
         } catch (Exception ex) {
             log.error("Database failure encountered while resolving refund ID {}: {}", id, ex.getMessage());
             throw new DatabaseException("Failed to update database records for this refund operation");
