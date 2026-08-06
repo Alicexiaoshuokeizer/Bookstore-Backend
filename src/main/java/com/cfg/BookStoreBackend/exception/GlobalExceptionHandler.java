@@ -18,4 +18,17 @@ public class GlobalExceptionHandler {
                 .body("An error occurred while accessing the database");
     }
 
+
+     // catch BookNotFoundException thrown when a requested book id doesn't exist
+    // response sends 404 not found status code with the specific message (safe to expose, no internal details)
+    @ExceptionHandler(BookNotFoundException.class)
+    public ResponseEntity<String> handleBookNotFoundException(BookNotFoundException e) {
+        return ResponseEntity
+                .status(404)
+                .body(e.getMessage());
+    }
 }
+
+
+
+
