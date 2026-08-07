@@ -1,6 +1,7 @@
 package com.cfg.BookStoreBackend.service;
 
 import com.cfg.BookStoreBackend.exception.DatabaseException;
+import com.cfg.BookStoreBackend.exception.DuplicateOperationException;
 import com.cfg.BookStoreBackend.exception.NotFoundException;
 import com.cfg.BookStoreBackend.model.dto.BookDTO;
 import com.cfg.BookStoreBackend.model.dto.ReturnBookRequestDTO;
@@ -125,7 +126,9 @@ public class BookService {
     // If purchase id/ book id does not exist, throws NotFoundException
     // If another error occurs, logs error and throws DatabaseException
     @Transactional
-    public ReturnBookResponseDTO returnBook(ReturnBookRequestDTO dto) throws NotFoundException, DatabaseException{
+    public ReturnBookResponseDTO returnBook(ReturnBookRequestDTO dto)
+            throws NotFoundException, DuplicateOperationException, DatabaseException
+    {
         // find purchase based on the provided purchase id
         Long purchaseId = dto.getPurchaseId();
         Purchase purchase = purchaseRepository
@@ -134,6 +137,12 @@ public class BookService {
                     log.warn("ReturnBook--purchase not found with id: {}", purchaseId);
                     return new NotFoundException("ReturnBook--purchase not found with id: " + purchaseId);
                 });
+
+        // check if purchase has already been processed to restock
+        if (purchase.getStatus() == PurchaseStatus.RETURN) {
+            log.warn("Return book rejected: Purchase id {} is already restocked", purchaseId);
+            throw new DuplicateOperationException("Books of purchase id:" + purchaseId + "has already been restocked");
+        }
 
         // find book based on book id in purchase
         Long bookId = purchase.getBook().getId();
@@ -153,6 +162,7 @@ public class BookService {
             purchase.setStatus(PurchaseStatus.RETURN);
             Purchase updatePurchase = purchaseRepository.save(purchase);
 
+            log.info("Successfully processed restock for purchase ID {}, book ID {}", purchaseId, bookId);
             return ReturnBookResponseDTO.toResponseDTO(updatePurchase, updatedBook);
         }
         catch (Exception e) {
