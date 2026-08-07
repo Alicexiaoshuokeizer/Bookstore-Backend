@@ -141,7 +141,7 @@ public class BookService {
         // check if purchase has already been processed to restock
         if (purchase.getStatus() == PurchaseStatus.RETURN) {
             log.warn("Return book rejected: Purchase id {} is already restocked", purchaseId);
-            throw new DuplicateOperationException("Books of purchase id:" + purchaseId + "has already been restocked");
+            throw new DuplicateOperationException("Books of purchase id:" + purchaseId + " has already been restocked");
         }
 
         // find book based on book id in purchase
