@@ -3,7 +3,8 @@ package com.cfg.BookStoreBackend.controller;
 
 import com.cfg.BookStoreBackend.exception.DatabaseException;
 import com.cfg.BookStoreBackend.model.dto.BookDTO;
-import com.cfg.BookStoreBackend.model.entity.Book;
+import com.cfg.BookStoreBackend.model.dto.ReturnBookRequestDTO;
+import com.cfg.BookStoreBackend.model.dto.ReturnBookResponseDTO;
 import com.cfg.BookStoreBackend.service.BookService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -64,4 +65,13 @@ public class BookController {
                 .build();
     }
 
+    // POST /api/returns
+    // if success, returns 200 ok status code and returns a ReturnBookResponseDTO object
+    // if fails, throws exception
+    // to return a 500 status code and general error message
+    @PostMapping("/api/returns")
+    public ResponseEntity<ReturnBookResponseDTO> returnBook(@Valid @RequestBody ReturnBookRequestDTO dto) {
+        return ResponseEntity
+                .ok(bookService.returnBook(dto));
+    }
 }
