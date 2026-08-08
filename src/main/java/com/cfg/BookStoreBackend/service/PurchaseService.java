@@ -1,7 +1,7 @@
 package com.cfg.BookStoreBackend.service;
 
 import com.cfg.BookStoreBackend.exception.DatabaseException;
-import com.cfg.BookStoreBackend.exception.DuplicateRefundException;
+import com.cfg.BookStoreBackend.exception.DuplicateOperationException;
 import com.cfg.BookStoreBackend.exception.NotFoundException;
 import com.cfg.BookStoreBackend.exception.OutOfStockException;
 import com.cfg.BookStoreBackend.model.dto.PurchaseRequestDTO;
@@ -96,7 +96,7 @@ public class PurchaseService {
 
     @Transactional
     public PurchaseResponseDTO refundPurchase(Long id)
-            throws NotFoundException, DuplicateRefundException, DatabaseException
+            throws NotFoundException, DuplicateOperationException, DatabaseException
     {
         // 1. Fetching & Business Input Validation (Kept clean outside of infrastructure error catching)
         Purchase purchase = purchaseRepository.findById(id)
@@ -108,7 +108,7 @@ public class PurchaseService {
         // Block duplicate refund triggers cleanly before starting database transaction writes
         if (purchase.getStatus() == PurchaseStatus.REFUNDED) {
             log.warn("Refund rejected: Purchase id {} is already refunded", id);
-            throw new DuplicateRefundException("This purchase has already been fully refunded");
+            throw new DuplicateOperationException("This purchase has already been fully refunded");
         }
 
         // 2. Pure Database Update & Save Operations

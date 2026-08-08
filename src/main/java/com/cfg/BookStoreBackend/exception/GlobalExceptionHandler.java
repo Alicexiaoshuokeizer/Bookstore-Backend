@@ -39,12 +39,12 @@ public class GlobalExceptionHandler {
                 .body(e.getMessage());
     }
 
-    // catch DuplicateRefundException that occurs when a purchase is already refunded
+    // catch DuplicateRefundException that occurs when a purchase is already refunded/return book
     // response sends 409 Conflict client error indicates a request
     // conflict with the current state of the target resource
-    // response sends an endpoint customized already refunded message
-    @ExceptionHandler(DuplicateRefundException.class)
-    public ResponseEntity<String> handleDuplicateRefundException(DuplicateRefundException e) {
+    // response sends an endpoint customized already refunded/returned message
+    @ExceptionHandler(DuplicateOperationException.class)
+    public ResponseEntity<String> handleDuplicateOperationException(DuplicateOperationException e) {
         return ResponseEntity
                 .status(409)
                 .body(e.getMessage());
