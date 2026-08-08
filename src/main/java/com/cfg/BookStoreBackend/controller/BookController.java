@@ -29,7 +29,7 @@ public class BookController {
     // if fails, throws DatabaseException, exception is handled by /exception/GlobalExceptionHandler
     // to return a 500 status code and general error message
     @PostMapping("/api/books")
-    public ResponseEntity<Book> addNewBook(@Valid @RequestBody BookDTO bookDTO) throws DatabaseException {
+    public ResponseEntity<BookResponseDTO> addNewBook(@Valid @RequestBody BookDTO bookDTO) throws DatabaseException {
         return ResponseEntity
                 .status(201)
                 .body(bookService.addBook(bookDTO));

@@ -1,7 +1,7 @@
 package com.cfg.BookStoreBackend.service;
 
-import com.cfg.BookStoreBackend.exception.BookNotFoundException;
 import com.cfg.BookStoreBackend.exception.DatabaseException;
+import com.cfg.BookStoreBackend.exception.NotFoundException;
 import com.cfg.BookStoreBackend.model.dto.BookDTO;
 import com.cfg.BookStoreBackend.model.dto.BookResponseDTO;
 import com.cfg.BookStoreBackend.model.entity.Book;
@@ -70,7 +70,7 @@ class BookServiceTest {
 
     // PUT test, update book should throw book not found exception for when book doesn't exist.
     @Test
-    void updateBookShouldThrowBookNotFoundExceptionWhenBookDoesNotExist() {
+    void updateBookShouldThrowNotFoundExceptionWhenBookDoesNotExist() {
         // Repo returns no book for this ID
         when(bookRepository.findById(999L))
                 .thenReturn(Optional.empty());
@@ -82,8 +82,8 @@ class BookServiceTest {
         updateRequest.setStock(5);
 
         // Checks the correct exception is thrown
-        BookNotFoundException exception = assertThrows(
-                BookNotFoundException.class,
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
                 () -> bookService.updateBook(999L, updateRequest)
         );
 
@@ -151,13 +151,13 @@ class BookServiceTest {
 
     // DELETE test, delete book should throw book not found exception when the ID is missing.
     @Test
-    void deleteBookShouldThrowBookNotFoundExceptionWhenIdDoesNotExist() {
+    void deleteBookShouldThrowNotFoundExceptionWhenIdDoesNotExist() {
         // Arrange: Force the repository to state the ID is missing from MySQL
         when(bookRepository.existsById(999L)).thenReturn(false);
 
         // Act & Assert: Verify it bubbles up your custom 404 tracking exception
-        BookNotFoundException exception = assertThrows(
-                BookNotFoundException.class,
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
                 () -> bookService.deleteBook(999L)
         );
 
