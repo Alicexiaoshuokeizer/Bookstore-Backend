@@ -154,7 +154,7 @@ public class BookService {
             throw new DuplicateOperationException("Books of purchase id:" + purchaseId + " has already been restocked");
         }
 
-        // find book based on book id in purchase
+        // find a book based on book id in purchase
         Long bookId = purchase.getBook().getId();
         Book book = bookRepository
                 .findById(bookId)
