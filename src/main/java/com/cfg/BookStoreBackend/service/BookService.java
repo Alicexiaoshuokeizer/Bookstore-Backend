@@ -44,6 +44,7 @@ public class BookService {
 
             // save new book
             Book saved = bookRepository.save(newBook);
+            log.info("Successfully saved a new Book. Book ID={}, Book Title={}", saved.getId(),saved.getTitle());
             return new BookResponseDTO(
                     saved.getId(),
                     saved.getTitle(),
