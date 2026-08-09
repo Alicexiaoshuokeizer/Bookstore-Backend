@@ -18,17 +18,35 @@ public class GlobalExceptionHandler {
                 .body("An error occurred while accessing the database");
     }
 
-
-     // catch BookNotFoundException thrown when a requested book id doesn't exist
-    // response sends 404 not found status code with the specific message (safe to expose, no internal details)
-    @ExceptionHandler(BookNotFoundException.class)
-    public ResponseEntity<String> handleBookNotFoundException(BookNotFoundException e) {
+    // catch NotFoundException and any subclass of it (e.g. BookNotFoundException)
+    // response sends 404 not found status code
+    // response also sends an endpoint customized not found message
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleNotFoundException(NotFoundException e) {
         return ResponseEntity
                 .status(404)
                 .body(e.getMessage());
     }
+
+    // catch OutOfStockException that occurs when book is out of stock
+    // response sends 409 Conflict client error indicates a request
+    // conflict with the current state of the target resource
+    // response sends an endpoint customized not out of stock message
+    @ExceptionHandler(OutOfStockException.class)
+    public ResponseEntity<String> handleOutOfStockException(OutOfStockException e) {
+        return ResponseEntity
+                .status(409)
+                .body(e.getMessage());
+    }
+
+    // catch DuplicateRefundException that occurs when a purchase is already refunded/return book
+    // response sends 409 Conflict client error indicates a request
+    // conflict with the current state of the target resource
+    // response sends an endpoint customized already refunded/returned message
+    @ExceptionHandler(DuplicateOperationException.class)
+    public ResponseEntity<String> handleDuplicateOperationException(DuplicateOperationException e) {
+        return ResponseEntity
+                .status(409)
+                .body(e.getMessage());
+    }
 }
-
-
-
-

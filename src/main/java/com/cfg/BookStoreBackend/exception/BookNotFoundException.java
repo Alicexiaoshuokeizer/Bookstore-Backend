@@ -1,9 +1,9 @@
 package com.cfg.BookStoreBackend.exception;
 
-public class BookNotFoundException extends RuntimeException {
-
-    // used by BookService when a requested book id doesn't exist
-    // caught by GlobalExceptionHandler to return a 404 instead of a 500
+// extends NotFoundException so it's automatically caught by the shared
+// handleNotFoundException handler in GlobalExceptionHandler - no separate
+// handler needed just for books
+public class BookNotFoundException extends NotFoundException {
     public BookNotFoundException(Long id) {
         super("Book not found with id: " + id);
     }
