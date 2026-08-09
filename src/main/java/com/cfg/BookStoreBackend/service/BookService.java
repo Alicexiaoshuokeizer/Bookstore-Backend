@@ -142,7 +142,7 @@ public class BookService {
         // check if purchase has already been processed to restock
         if (purchase.getStatus() == PurchaseStatus.RETURN) {
             log.warn("Return book rejected: Purchase id {} is already restocked", purchaseId);
-            throw new DuplicateOperationException("Books of purchase id:" + purchaseId + " has already been restocked");
+            throw new DuplicateOperationException("Books of purchase id: " + purchaseId + " has already been restocked");
         }
 
         // find book based on book id in purchase
@@ -157,14 +157,13 @@ public class BookService {
         try {
             // update and save book stock
             book.setStock(book.getStock() + purchase.getQuantity());
-            Book updatedBook = bookRepository.save(book);
 
             // update and save purchase status
             purchase.setStatus(PurchaseStatus.RETURN);
             Purchase updatePurchase = purchaseRepository.save(purchase);
 
             log.info("Successfully processed restock for purchase ID {}, book ID {}", purchaseId, bookId);
-            return ReturnBookResponseDTO.toResponseDTO(updatePurchase, updatedBook);
+            return ReturnBookResponseDTO.toResponseDTO(updatePurchase);
         }
         catch (Exception e) {
             log.error("Failed to process return book with purchase id: {}", purchaseId);
