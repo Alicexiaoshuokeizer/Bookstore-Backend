@@ -24,7 +24,10 @@ CREATE TABLE IF NOT EXISTS purchases (
 id BIGINT AUTO_INCREMENT PRIMARY KEY,
 book_id BIGINT NOT NULL,
 customer_id BIGINT NOT NULL,
-amount DECIMAL(10,2) NOT NULL,
+-- quantity: Tracks how many copies are ordered
+quantity INT NOT NULL,
+-- transaction_price: The final total price paid for the transaction.
+transaction_price DECIMAL(10,2) NOT NULL,
 date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 status VARCHAR(50) NOT NULL,
 FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE RESTRICT,
