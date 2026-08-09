@@ -2,10 +2,18 @@ package com.cfg.BookStoreBackend.service;
 
 import com.cfg.BookStoreBackend.exception.BookNotFoundException;
 import com.cfg.BookStoreBackend.exception.DatabaseException;
+import com.cfg.BookStoreBackend.exception.DuplicateOperationException;
+import com.cfg.BookStoreBackend.exception.NotFoundException;
 import com.cfg.BookStoreBackend.model.dto.BookDTO;
 import com.cfg.BookStoreBackend.model.dto.BookResponseDTO;
+import com.cfg.BookStoreBackend.model.dto.ReturnBookRequestDTO;
+import com.cfg.BookStoreBackend.model.dto.ReturnBookResponseDTO;
 import com.cfg.BookStoreBackend.model.entity.Book;
+import com.cfg.BookStoreBackend.model.entity.Purchase;
 import com.cfg.BookStoreBackend.model.repository.BookRepository;
+import com.cfg.BookStoreBackend.model.repository.PurchaseRepository;
+import com.cfg.BookStoreBackend.util.PurchaseStatus;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,8 +28,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookService {
     // fields
-    // create book repository for server to communicate with db
+    // create book and purchase repository for server to communicate with db
     private final BookRepository bookRepository;
+    private final PurchaseRepository purchaseRepository;
 
     // methods
     // add new book to books table via bookRepository
@@ -35,6 +44,8 @@ public class BookService {
             newBook.setAuthor(bookDTO.getAuthor().trim());
             newBook.setPrice(bookDTO.getPrice());
             newBook.setStock(bookDTO.getStock());
+
+            // save new book
             Book savedBook = bookRepository.save(newBook);
             return BookResponseDTO.fromEntity(savedBook);
         }
@@ -65,4 +76,108 @@ public class BookService {
         return BookResponseDTO.fromEntity(book);
     }
 
+    // Updates existing book via bookRepository.
+    // If successful, finds, updates and saves the changes and returns the updated book object.
+    // If book doesn't exist, throws BookNotFoundException.
+    // If another error occurs, logs error and throws DatabaseException.
+    public BookResponseDTO updateBook(Long id, BookDTO bookDTO) throws DatabaseException {
+        try {
+            // Retrieves existing book from db by id.
+            Book existingBook = bookRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Book not found with id: " + id));
+
+            // Updates existing book with new values.
+            existingBook.setTitle(bookDTO.getTitle().trim());
+            existingBook.setAuthor(bookDTO.getAuthor().trim());
+            existingBook.setPrice(bookDTO.getPrice());
+            existingBook.setStock(bookDTO.getStock());
+
+            // Saves updated book.
+            Book updatedBook = bookRepository.save(existingBook);
+
+            return BookResponseDTO.fromEntity(updatedBook);
+        }
+        catch (NotFoundException ex) {
+            // Log for missing book
+            log.warn("Book update failed: {}", ex.getMessage());
+            throw ex;
+        }
+        catch (Exception ex) {
+            // Throws exception for /exception/GlobalExceptionHandler
+            // to handle and send 500 status code response.
+            log.error("Failed to update book {}: {}", id, ex.getMessage());
+            throw new DatabaseException("Failed to update book");
+        }
+    }
+
+    // Deletes an existing book via bookRepository by its ID.
+    // If the book doesn't exist, throws BookNotFoundException.
+    // If a database access error occurs, logs the error and throws DatabaseException.
+    public void deleteBook(Long id) throws DatabaseException {
+        // Look for the book first. If missing, throw our custom exception to trigger a 404.
+        if (!bookRepository.existsById(id)) {
+            log.warn("Book deletion failed: Book not found with id: {}", id);
+            throw new NotFoundException("Book not found with id: " + id);
+        }
+
+        try {
+            bookRepository.deleteById(id);
+            log.info("Successfully deleted book with id: {}", id);
+        } catch (Exception ex) {
+            log.error("Failed to delete book {}: {}", id, ex.getMessage());
+            throw new DatabaseException("Failed to delete book");
+        }
+
+    }
+
+    // Transactional process, if an exception occurs, the whole process rollbacks
+    // Updates existing book stock via a provided purchase id, when dealing with return book from purchase
+    // If successful, returns ReturnBookResponseDTO as confirmation
+    // If purchase id/ book id does not exist, throws NotFoundException
+    // If another error occurs, logs error and throws DatabaseException
+    @Transactional
+    public ReturnBookResponseDTO returnBook(ReturnBookRequestDTO dto)
+            throws NotFoundException, DuplicateOperationException, DatabaseException
+    {
+        // find purchase based on the provided purchase id
+        Long purchaseId = dto.getPurchaseId();
+        Purchase purchase = purchaseRepository
+                .findById(purchaseId)
+                .orElseThrow(() -> {
+                    log.warn("ReturnBook--purchase not found with id: {}", purchaseId);
+                    return new NotFoundException("ReturnBook--purchase not found with id: " + purchaseId);
+                });
+
+        // check if purchase has already been processed to restock
+        if (purchase.getStatus() == PurchaseStatus.RETURN) {
+            log.warn("Return book rejected: Purchase id {} is already restocked", purchaseId);
+            throw new DuplicateOperationException("Books of purchase id:" + purchaseId + " has already been restocked");
+        }
+
+        // find book based on book id in purchase
+        Long bookId = purchase.getBook().getId();
+        Book book = bookRepository
+                .findById(bookId)
+                .orElseThrow(() -> {
+                    log.warn("ReturnBook--book not found with id: {}", purchaseId);
+                    return new NotFoundException("ReturnBook--book not found for with id: " + bookId);
+                });
+
+        try {
+            // update and save book stock
+            book.setStock(book.getStock() + purchase.getQuantity());
+            Book updatedBook = bookRepository.save(book);
+
+            // update and save purchase status
+            purchase.setStatus(PurchaseStatus.RETURN);
+            Purchase updatePurchase = purchaseRepository.save(purchase);
+
+            log.info("Successfully processed restock for purchase ID {}, book ID {}", purchaseId, bookId);
+            return ReturnBookResponseDTO.toResponseDTO(updatePurchase, updatedBook);
+        }
+        catch (Exception e) {
+            log.error("Failed to process return book with purchase id: {}", purchaseId);
+            throw new DatabaseException("Failed to process returning purchased book");
+        }
+    }
 }

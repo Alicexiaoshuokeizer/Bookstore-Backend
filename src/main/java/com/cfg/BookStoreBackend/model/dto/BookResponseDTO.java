@@ -9,24 +9,21 @@ import lombok.Data;
 // so changing the database later doesn't automatically change the API
 @Data
 @AllArgsConstructor
-
 public class BookResponseDTO {
-        private Long id;
-        private String title;
-        private String author;
-        private Double price;
-        private Integer stock;
+    private Long id;
+    private String title;
+    private String author;
+    private Double price;
+    private Integer stock;
 
-        // converts a Book entity into the shape the API actually sends back
-        public static BookResponseDTO fromEntity(Book book) {
-            return new BookResponseDTO(
-                    book.getId(),
-                    book.getTitle(),
-                    book.getAuthor(),
-                    book.getPrice(),
-                    book.getStock()
-            );
-        }
+    // converts a Book entity into the shape the API actually sends back
+    public static BookResponseDTO fromEntity(Book book) {
+        return new BookResponseDTO(
+                book.getId(),
+                book.getTitle(),
+                book.getAuthor(),
+                book.getPrice(),
+                book.getStock()
+        );
     }
-
-
+}
