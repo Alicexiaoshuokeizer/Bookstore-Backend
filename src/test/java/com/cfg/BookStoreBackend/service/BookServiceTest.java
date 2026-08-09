@@ -167,4 +167,62 @@ class BookServiceTest {
         verify(bookRepository, times(1)).existsById(999L);
         verify(bookRepository, never()).deleteById(anyLong());
     }
+
+    // POST test: add book should return BookResponseDTO when everything is valid
+    @Test
+    void addBookShouldReturnCorrectBookResponseDTOWhenValid() {
+        // Assign
+        // create requestDTO as argument for addBook()
+        BookDTO request = new BookDTO();
+        request.setTitle("Title");
+        request.setAuthor("Author");
+        request.setPrice(12.0);
+        request.setStock(100);
+
+        // create a book entity as the entity the repo return after saving newBook
+        Book saved = new Book();
+        saved.setId(10L);
+        saved.setTitle("Title");
+        saved.setAuthor("Author");
+        saved.setPrice(12.0);
+        saved.setStock(100);
+
+        // mock the repo
+        when(bookRepository.save(any(Book.class))).thenReturn(saved);
+
+        // Act
+        // call the service method to be tested: addBook()
+        BookResponseDTO response = bookService.addBook(request);
+
+        // Assert
+        assertEquals(10L, response.getId());
+        assertEquals("Title", response.getTitle());
+        assertEquals("Author", response.getAuthor());
+        assertEquals(12.0, response.getPrice());
+        assertEquals(100, response.getStock());
+
+        // Verify that the repo methods being called
+        verify(bookRepository, times(1)).save(any(Book.class));
+    }
+
+    // POST test: add book should throw DataBaseException when database failed to save new book
+    @Test
+    void addBookShouldThrowDataBaseExceptionWhenSaveFails() {
+        // Assign
+        // create requestDTO as argument for addBook()
+        BookDTO request = new BookDTO();
+        request.setTitle("Title");
+        request.setAuthor("Author");
+        request.setPrice(12.0);
+        request.setStock(100);
+
+        when(bookRepository.save(any(Book.class))).thenThrow(new RuntimeException("db error"));
+
+        // Assert
+        assertThrows(DatabaseException.class, () -> bookService.addBook(request));
+
+        // Verify
+        verify(bookRepository, times(1)).save(any(Book.class));
+    }
+
 }
