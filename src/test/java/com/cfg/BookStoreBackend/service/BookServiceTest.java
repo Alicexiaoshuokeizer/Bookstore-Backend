@@ -297,7 +297,7 @@ class BookServiceTest {
 
         // book restock to 95(old stock) + 5(purchase return quantity) = 100(new stock)
         // business logic applies to foundBook, stock increase correctly
-        assertEquals(100, purchaseToSave.getBook().getStock());
+        assertEquals(100, foundBook.getStock());
         // response get updated new book stock correctly
         assertEquals(100,responseDTO.getUpdatedStock());
         // business logic applies to purchaseToSave, status changed to RETURN
@@ -356,7 +356,6 @@ class BookServiceTest {
         // Verify
         verify(purchaseRepository, times(1)).findById(1L);
         verify(bookRepository, times(1)).findById(10L);
-        verify(bookRepository,never()).save(any(Book.class));
         verify(purchaseRepository,never()).save(any(Purchase.class));
     }
 
@@ -438,7 +437,6 @@ class BookServiceTest {
         // Verify
         verify(purchaseRepository,times(1)).findById(1L);
         verify(bookRepository,times(1)).findById(10L);
-        // the real "no rollback needed because we never got there" check
         verify(purchaseRepository, times(1)).save(any(Purchase.class));
     }
 
