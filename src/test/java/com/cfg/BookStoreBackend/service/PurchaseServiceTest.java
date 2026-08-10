@@ -202,7 +202,7 @@ class PurchaseServiceTest {
         verify(purchaseRepository, never()).save(any(Purchase.class));
     }
 
-    // REFUND test, trying to refund an order that was already returned should throw a DatabaseException.
+    // REFUND test, trying to refund an order that was already returned should throw a DuplicateOperationException.
     @Test
     void refundPurchaseShouldThrowDuplicateOperationExceptionWhenAlreadyRefunded() {
         // Arrange: Expecting "REFUNDED" status text mismatch control
