@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         String parameterName = ex.getName();
         return ResponseEntity
-                .status(404)
+                .status(400)
                 .body(String.format("Invalid data format: %s", parameterName));
     }
 
