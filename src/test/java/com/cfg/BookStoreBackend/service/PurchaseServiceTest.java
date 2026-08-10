@@ -104,7 +104,8 @@ class PurchaseServiceTest {
         when(customerRepository.findById(999L)).thenReturn(Optional.empty());
 
         // Assert
-        assertThrows(NotFoundException.class, () -> purchaseService.makePurchase(request));
+        NotFoundException ex = assertThrows(NotFoundException.class, () -> purchaseService.makePurchase(request));
+        assertEquals("Customer not found with id: 999", ex.getMessage());
 
         verify(customerRepository,times(1)).findById(999L);
         verify(bookRepository, never()).findById(10L);
@@ -127,7 +128,8 @@ class PurchaseServiceTest {
         when(bookRepository.findById(1000L)).thenReturn(Optional.empty());
 
         // Assert
-        assertThrows(NotFoundException.class, () -> purchaseService.makePurchase(request));
+        NotFoundException ex = assertThrows(NotFoundException.class, () -> purchaseService.makePurchase(request));
+        assertEquals("Book not found with id: 1000", ex.getMessage());
 
         verify(customerRepository, times(1)).findById(1L);
         verify(bookRepository,times(1)).findById(1000L);
