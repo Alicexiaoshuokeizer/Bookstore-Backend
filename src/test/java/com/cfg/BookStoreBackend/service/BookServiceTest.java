@@ -79,7 +79,7 @@ class BookServiceTest {
         verify(bookRepository).save(existingBook);
     }
 
-    // PUT test, update book should throw book not found exception for when book doesn't exist.
+    // PUT test, update book should throw not found exception for when book doesn't exist.
     @Test
     void updateBookShouldThrowNotFoundExceptionWhenBookDoesNotExist() {
         // Repo returns no book for this ID

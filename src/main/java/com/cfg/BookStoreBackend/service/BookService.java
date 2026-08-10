@@ -63,7 +63,7 @@ public class BookService {
 
     // Updates existing book via bookRepository.
     // If successful, finds, updates and saves the changes and returns the updated book object.
-    // If book doesn't exist, throws BookNotFoundException.
+    // If book doesn't exist, throws NotFoundException.
     // If another error occurs, logs error and throws DatabaseException.
     public BookResponseDTO updateBook(Long id, BookDTO bookDTO) throws DatabaseException {
         try {
