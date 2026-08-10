@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.cfg.BookStoreBackend.model.dto.BookResponseDTO;
 import org.springframework.web.bind.annotation.DeleteMapping; // Added clean import for DeleteMapping
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestController
 public class BookController {
@@ -48,7 +49,7 @@ public class BookController {
     public ResponseEntity<BookResponseDTO> updateBook(
             @PathVariable Long id,
             @Valid @RequestBody BookDTO bookDTO)
-            throws DatabaseException {
+            throws DatabaseException, MethodArgumentTypeMismatchException {
 
         return ResponseEntity.ok(bookService.updateBook(id, bookDTO));
     }
@@ -58,7 +59,7 @@ public class BookController {
     // If the ID doesn't exist, it throws BookNotFoundException (handled by GlobalExceptionHandler for a 404).
     // If a database error occurs, it throws DatabaseException (handled for a 500).
     @DeleteMapping("/api/books/{id}") // Fixed path string and inline package reference
-    public ResponseEntity<Void> deleteBook(@PathVariable Long id) throws DatabaseException {
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id) throws DatabaseException, MethodArgumentTypeMismatchException {
         bookService.deleteBook(id);
         return ResponseEntity
                 .noContent() // Visual Anchor: Returns HTTP 204 No Content status code
