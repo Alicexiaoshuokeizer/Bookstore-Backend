@@ -151,7 +151,7 @@ public class BookService {
                 .findById(bookId)
                 .orElseThrow(() -> {
                     log.warn("ReturnBook--book not found with id: {}", purchaseId);
-                    return new NotFoundException("ReturnBook--book not found for with id: " + bookId);
+                    return new NotFoundException("ReturnBook--book not found with id: " + bookId);
                 });
 
         try {
