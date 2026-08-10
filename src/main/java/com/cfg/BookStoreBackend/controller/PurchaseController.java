@@ -29,7 +29,7 @@ public class PurchaseController {
     }
 
     @PutMapping("/{id}/refund")
-    public ResponseEntity<PurchaseResponseDTO> refundPurchaseOrder(@PathVariable Long id) throws MethodArgumentTypeMismatchException {
+    public ResponseEntity<PurchaseResponseDTO> refundPurchaseOrder(@PathVariable Long id) {
         return ResponseEntity.ok(purchaseService.refundPurchase(id));
     }
 }

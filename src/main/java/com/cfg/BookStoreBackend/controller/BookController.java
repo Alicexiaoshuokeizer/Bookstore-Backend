@@ -49,7 +49,7 @@ public class BookController {
     public ResponseEntity<BookResponseDTO> updateBook(
             @PathVariable Long id,
             @Valid @RequestBody BookDTO bookDTO)
-            throws DatabaseException, MethodArgumentTypeMismatchException {
+            throws DatabaseException {
 
         return ResponseEntity.ok(bookService.updateBook(id, bookDTO));
     }
@@ -59,7 +59,7 @@ public class BookController {
     // If the ID doesn't exist, it throws BookNotFoundException (handled by GlobalExceptionHandler for a 404).
     // If a database error occurs, it throws DatabaseException (handled for a 500).
     @DeleteMapping("/api/books/{id}") // Fixed path string and inline package reference
-    public ResponseEntity<Void> deleteBook(@PathVariable Long id) throws DatabaseException, MethodArgumentTypeMismatchException {
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id) throws DatabaseException {
         bookService.deleteBook(id);
         return ResponseEntity
                 .noContent() // Visual Anchor: Returns HTTP 204 No Content status code
