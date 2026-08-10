@@ -1,6 +1,5 @@
 package com.cfg.BookStoreBackend.model.dto;
 
-import com.cfg.BookStoreBackend.model.entity.Book;
 import com.cfg.BookStoreBackend.model.entity.Purchase;
 import com.cfg.BookStoreBackend.util.PurchaseStatus;
 import lombok.Data;
@@ -25,7 +24,7 @@ public class ReturnBookResponseDTO {
     private Integer updatedStock;
 
     // method
-    public static ReturnBookResponseDTO toResponseDTO(Purchase purchase, Book book) {
+    public static ReturnBookResponseDTO toResponseDTO(Purchase purchase) {
         ReturnBookResponseDTO dto = new ReturnBookResponseDTO();
         // purchase info
         dto.setPurchaseId(purchase.getId());
@@ -34,10 +33,10 @@ public class ReturnBookResponseDTO {
         dto.setStatus(purchase.getStatus());
 
         // book info
-        dto.setBookId(book.getId());
-        dto.setTitle(book.getTitle());
-        dto.setAuthor(book.getAuthor());
-        dto.setUpdatedStock(book.getStock());
+        dto.setBookId(purchase.getBook().getId());
+        dto.setTitle(purchase.getBook().getTitle());
+        dto.setAuthor(purchase.getBook().getAuthor());
+        dto.setUpdatedStock(purchase.getBook().getStock());
 
         return dto;
     }
