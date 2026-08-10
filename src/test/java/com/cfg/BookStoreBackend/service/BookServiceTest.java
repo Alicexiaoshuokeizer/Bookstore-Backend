@@ -16,7 +16,6 @@ import com.cfg.BookStoreBackend.util.PurchaseStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -231,7 +230,8 @@ class BookServiceTest {
         when(bookRepository.save(any(Book.class))).thenThrow(new RuntimeException("db error"));
 
         // Assert
-        assertThrows(DatabaseException.class, () -> bookService.addBook(request));
+        DatabaseException ex = assertThrows(DatabaseException.class, () -> bookService.addBook(request));
+        assertEquals("Failed to save new book", ex.getMessage());
 
         // Verify
         verify(bookRepository, times(1)).save(any(Book.class));
@@ -318,7 +318,8 @@ class BookServiceTest {
         when(purchaseRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> bookService.returnBook(request));
+        NotFoundException ex = assertThrows(NotFoundException.class, () -> bookService.returnBook(request));
+        assertEquals("ReturnBook--purchase not found with id: 1", ex.getMessage());
 
         // Verify
         verify(purchaseRepository, times(1)).findById(1L);
@@ -350,8 +351,8 @@ class BookServiceTest {
         when(bookRepository.findById(10L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        Exception exception = assertThrows(NotFoundException.class, () -> bookService.returnBook(request));
-        assertEquals("ReturnBook--book not found for with id: 10", exception.getMessage());
+        NotFoundException ex = assertThrows(NotFoundException.class, () -> bookService.returnBook(request));
+        assertEquals("ReturnBook--book not found with id: 10", ex.getMessage());
 
         // Verify
         verify(purchaseRepository, times(1)).findById(1L);
@@ -432,7 +433,8 @@ class BookServiceTest {
         when(purchaseRepository.save(any(Purchase.class))).thenThrow(new RuntimeException());
 
         // Act & Assert
-        assertThrows(DatabaseException.class, () -> bookService.returnBook(request));
+        DatabaseException ex = assertThrows(DatabaseException.class, () -> bookService.returnBook(request));
+        assertEquals("Failed to process returning purchased book", ex.getMessage());
 
         // Verify
         verify(purchaseRepository,times(1)).findById(1L);
