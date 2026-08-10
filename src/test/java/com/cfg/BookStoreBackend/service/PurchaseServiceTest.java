@@ -147,7 +147,7 @@ class PurchaseServiceTest {
 
         Book book = new Book();
         book.setId(10L);
-        book.setStock(20); // stock > order quantity
+        book.setStock(20); // stock < order quantity
         book.setTitle("Title");
 
         Customer customer = new Customer();
