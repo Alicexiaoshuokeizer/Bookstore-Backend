@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
 //    =============Final Defense============================================
 //    =============This Exception handler must be the last handler in this class===========================
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handlerUnexpectedRuntimeException(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<String> handlerUnexpectedRuntimeException(RuntimeException ex, HttpServletRequest request) {
         // log error at server side to help debugging
         // show request url (endpoint), show error message, show error traceback details
         log.error("Unexpected error at: [{}] {}", request.getRequestURL(), ex.getMessage(), ex);
