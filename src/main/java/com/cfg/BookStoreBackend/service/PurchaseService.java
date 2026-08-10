@@ -60,7 +60,7 @@ public class PurchaseService {
 
         // verify quantity to be ordered is <= stock in book
         int quantityOrdered = requestDTO.getQuantity();
-        if (book.getStock() <= quantityOrdered) {
+        if (book.getStock() < quantityOrdered) {
             log.warn("New purchase failed: stock insufficiency book id: {}, quantity ordered: {}", requestDTO.getBookId(), quantityOrdered);
             throw new OutOfStockException("Book does not have sufficient stock, title:"+ book.getTitle());
         }
