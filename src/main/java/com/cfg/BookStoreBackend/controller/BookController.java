@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.cfg.BookStoreBackend.model.dto.BookResponseDTO;
 import org.springframework.web.bind.annotation.DeleteMapping; // Added clean import for DeleteMapping
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestController
 public class BookController {
