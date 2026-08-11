@@ -15,7 +15,7 @@ Our system architecture was structurally blueprinted and verified using **Figma*
 
 ## 🛠️ Prerequisites & Environmental Configurations
 
-*   **Runtime Environment**: Java 21 LTS & Maven 3.9+
+*   **Runtime Environment**: Java 25 LTS & Maven 3.9+
 *   **Virtualization Tools**: Docker Engine & Docker Compose v2+
 *   **Database Infrastructure**: MySQL 8.0 Relational Engine
 
@@ -32,13 +32,22 @@ The framework leverages dynamic environment fallback properties. You can easily 
 ---
 
 ## 🏃 Local Execution & Deployment Quickstart
+### Pre-start:
+```bash
+cp .env.example .env
+nano .env 
+# fill in your database credentials in the text editor
+# ctl+x-> exit,  y->save, enter->exit editor
+```
+Or you can manually copy the `.env.example` file, change the file name to `.env` and fill in your database credentials 
 
 ### Option A: Local Orchestration Stack (Docker Compose)
 To compile the core source package code and spin up the complete multi-service environment (`bookstore-app:8080` and `bookstore-db:3306`) seamlessly inside the container network, run:
 
 ```bash
 # Compile dependencies and launch the fully isolated architecture stack
-docker-compose up --build -d
+docker compose down -v
+docker compose up --build -d
 
 # Verify that both structural application containers are running and healthy
 docker ps
@@ -53,6 +62,13 @@ If you want to run the core backend logic natively on your host machine while li
     ```
 2.  Boot up your Spring Boot runtime service using the Maven wrapper:
     ```bash
+    set -a
+    source .env
+    set +a
+
+    export SPRING_DATASOURCE_USERNAME="$DB_USERNAME"
+    export SPRING_DATASOURCE_PASSWORD="$DB_PASSWORD"
+    
     ./mvnw spring-boot:run
     ```
 
