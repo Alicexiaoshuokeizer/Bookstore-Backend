@@ -17,7 +17,7 @@ public class BookResponseDTO {
     private Integer stock;
 
     // converts a Book entity into the shape the API sends back
-    public static BookResponseDTO fromEntity(Book book) {
+    public static BookResponseDTO toResponseDTO(Book book) {
         return new BookResponseDTO(
                 book.getId(),
                 book.getTitle(),
