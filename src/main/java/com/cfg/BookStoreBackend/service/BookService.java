@@ -4,6 +4,7 @@ import com.cfg.BookStoreBackend.exception.DatabaseException;
 import com.cfg.BookStoreBackend.exception.DuplicateOperationException;
 import com.cfg.BookStoreBackend.exception.NotFoundException;
 import com.cfg.BookStoreBackend.model.dto.BookDTO;
+import com.cfg.BookStoreBackend.model.dto.BookResponseDTO;
 import com.cfg.BookStoreBackend.model.dto.ReturnBookRequestDTO;
 import com.cfg.BookStoreBackend.model.dto.ReturnBookResponseDTO;
 import com.cfg.BookStoreBackend.model.entity.Book;
@@ -15,7 +16,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import com.cfg.BookStoreBackend.model.dto.BookResponseDTO;
+
+import java.util.List;
 
 // indicate this is a service component for spring
 @Service
@@ -31,7 +33,7 @@ public class BookService {
 
   // methods
     // add new book to books table via bookRepository
-    // if success, returns Book class object of the newly added book
+    // if success, returns BookResponseDTO of the newly added book (never the raw entity)
     // if fails, returns log error info in console and throw InternalServerError error
     public BookResponseDTO addBook(BookDTO bookDTO) throws DatabaseException {
         try {
@@ -43,15 +45,9 @@ public class BookService {
             newBook.setStock(bookDTO.getStock());
 
             // save new book
-            Book saved = bookRepository.save(newBook);
-            log.info("Successfully saved a new Book. Book ID={}, Book Title={}", saved.getId(),saved.getTitle());
-            return new BookResponseDTO(
-                    saved.getId(),
-                    saved.getTitle(),
-                    saved.getAuthor(),
-                    saved.getPrice(),
-                    saved.getStock()
-            );
+            Book savedBook = bookRepository.save(newBook);
+            log.info("Successfully saved a new Book. Book ID={}, Book Title={}", savedBook.getId(),savedBook.getTitle());
+            return BookResponseDTO.toResponseDTO(savedBook);
         }
         catch (Exception ex) {
             // log message for internal tracking and debugging
@@ -59,6 +55,25 @@ public class BookService {
             // throw exception for /exception/GlobalExceptionHandler to handle and send 500 status code response
             throw new DatabaseException("Failed to save new book");
         }
+    }
+
+    // get every book in the books table
+    // no "not found" case here an empty catalog is valid, so this returns an empty list rather than an error
+    public List<BookResponseDTO> getAllBooks() {
+        log.info("Fetching all books");
+        return bookRepository.findAll().stream()
+                .map(BookResponseDTO::toResponseDTO)
+                .toList();
+    }
+
+    // get a single book by id
+    // if the id doesn't exist, throw NotFoundException for /exception/GlobalExceptionHandler to catch
+    // and turn into a 404, rather than letting a null through to the controller
+    public BookResponseDTO getBookById(Long id) {
+        log.info("Fetching book with id {}", id);
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Book not found with id: " + id));
+        return BookResponseDTO.toResponseDTO(book);
     }
 
     // Updates existing book via bookRepository.
@@ -80,13 +95,7 @@ public class BookService {
             // Saves updated book.
             Book updatedBook = bookRepository.save(existingBook);
 
-            return new BookResponseDTO(
-                    updatedBook.getId(),
-                    updatedBook.getTitle(),
-                    updatedBook.getAuthor(),
-                    updatedBook.getPrice(),
-                    updatedBook.getStock()
-            );
+            return BookResponseDTO.toResponseDTO(updatedBook);
         }
         catch (NotFoundException ex) {
             // Log for missing book
@@ -102,7 +111,7 @@ public class BookService {
     }
 
     // Deletes an existing book via bookRepository by its ID.
-    // If the book doesn't exist, throws BookNotFoundException.
+    // If the book doesn't exist, throws NotFoundException.
     // If a database access error occurs, logs the error and throws DatabaseException.
     public void deleteBook(Long id) throws DatabaseException {
         // Look for the book first. If missing, throw our custom exception to trigger a 404.
