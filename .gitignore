@@ -1,7 +1,5 @@
 #credentials
 .env
-secrets/*.txt
-!secrets/*.txt.example
 
 HELP.md
 target/
