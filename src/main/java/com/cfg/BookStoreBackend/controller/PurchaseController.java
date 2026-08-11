@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,8 +26,11 @@ public class PurchaseController {
                 .body(purchaseService.makePurchase(requestDTO));
     }
 
-    @PutMapping("/{id}/refund")
+    // POST /api/purchases/{id}/refund
+    @PostMapping("/{id}/refund") // Updated HTTP method and route to match team blueprint
     public ResponseEntity<PurchaseResponseDTO> refundPurchaseOrder(@PathVariable Long id) {
         return ResponseEntity.ok(purchaseService.refundPurchase(id));
     }
+
 }
+

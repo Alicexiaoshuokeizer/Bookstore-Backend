@@ -26,12 +26,12 @@ import java.util.List;
 // constructor injection via lombok to indicate dependency of any final field variables
 @RequiredArgsConstructor
 public class BookService {
-    // fields
+  // fields
     // create book and purchase repository for server to communicate with db
     private final BookRepository bookRepository;
     private final PurchaseRepository purchaseRepository;
 
-    // methods
+  // methods
     // add new book to books table via bookRepository
     // if success, returns BookResponseDTO of the newly added book (never the raw entity)
     // if fails, returns log error info in console and throw InternalServerError error
@@ -46,6 +46,7 @@ public class BookService {
 
             // save new book
             Book savedBook = bookRepository.save(newBook);
+            log.info("Successfully saved a new Book. Book ID={}, Book Title={}", savedBook.getId(),savedBook.getTitle());
             return BookResponseDTO.toResponseDTO(savedBook);
         }
         catch (Exception ex) {
@@ -150,7 +151,7 @@ public class BookService {
         // check if purchase has already been processed to restock
         if (purchase.getStatus() == PurchaseStatus.RETURN) {
             log.warn("Return book rejected: Purchase id {} is already restocked", purchaseId);
-            throw new DuplicateOperationException("Books of purchase id:" + purchaseId + " has already been restocked");
+            throw new DuplicateOperationException("Books of purchase id: " + purchaseId + " has already been restocked");
         }
 
         // find book based on book id in purchase
@@ -159,20 +160,19 @@ public class BookService {
                 .findById(bookId)
                 .orElseThrow(() -> {
                     log.warn("ReturnBook--book not found with id: {}", purchaseId);
-                    return new NotFoundException("ReturnBook--book not found for with id: " + bookId);
+                    return new NotFoundException("ReturnBook--book not found with id: " + bookId);
                 });
 
         try {
             // update and save book stock
             book.setStock(book.getStock() + purchase.getQuantity());
-            Book updatedBook = bookRepository.save(book);
 
             // update and save purchase status
             purchase.setStatus(PurchaseStatus.RETURN);
             Purchase updatePurchase = purchaseRepository.save(purchase);
 
             log.info("Successfully processed restock for purchase ID {}, book ID {}", purchaseId, bookId);
-            return ReturnBookResponseDTO.toResponseDTO(updatePurchase, updatedBook);
+            return ReturnBookResponseDTO.toResponseDTO(updatePurchase);
         }
         catch (Exception e) {
             log.error("Failed to process return book with purchase id: {}", purchaseId);
@@ -180,3 +180,5 @@ public class BookService {
         }
     }
 }
+
+

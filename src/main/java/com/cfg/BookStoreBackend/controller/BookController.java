@@ -60,7 +60,7 @@ public class BookController {
     // If it's successful, it'll find the book by id and update its details.
     // It'll save the changes to the db and return 200 OK status with the updated book in response body.
 
-    // If the id doesn't exist it'll throw BookNotFoundException, handled by /exception/GlobalExceptionHandler
+    // If the id doesn't exist it'll throw NotFoundException, handled by /exception/GlobalExceptionHandler
     // and will return 404 Not Found status code with error message.
 
     // If a different db error occurs, throws DatabaseException and returns 500 status code and general error message.
@@ -75,7 +75,7 @@ public class BookController {
 
     // DELETE /api/books/{id}
     // If successful, deletes the book from the database and returns a 204 No Content status.
-    // If the ID doesn't exist, it throws BookNotFoundException (handled by GlobalExceptionHandler for a 404).
+    // If the ID doesn't exist, it throws NotFoundException (handled by GlobalExceptionHandler for a 404).
     // If a database error occurs, it throws DatabaseException (handled for a 500).
     @DeleteMapping("/api/books/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) throws DatabaseException {
