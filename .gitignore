@@ -1,5 +1,6 @@
 #credentials
 .env
+secrets/
 
 HELP.md
 target/
