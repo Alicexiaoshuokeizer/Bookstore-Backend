@@ -1,4 +1,4 @@
--- 1. Create the Database Sandbox Namespace
+-- 1. Create the Database Sandbox Namespace.
 CREATE DATABASE IF NOT EXISTS bookstore_db;
 USE bookstore_db;
 
@@ -33,3 +33,5 @@ CREATE TABLE IF NOT EXISTS purchases (
     FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE RESTRICT,
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE RESTRICT
     );
+
+
