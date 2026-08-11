@@ -55,7 +55,7 @@ public class BookController {
 
     // DELETE /api/books/{id}
     // If successful, deletes the book from the database and returns a 204 No Content status.
-    // If the ID doesn't exist, it throws BookNotFoundException (handled by GlobalExceptionHandler for a 404).
+    // If the ID doesn't exist, it throws NotFoundException (handled by GlobalExceptionHandler for a 404).
     // If a database error occurs, it throws DatabaseException (handled for a 500).
     @DeleteMapping("/api/books/{id}") // Fixed path string and inline package reference
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) throws DatabaseException {

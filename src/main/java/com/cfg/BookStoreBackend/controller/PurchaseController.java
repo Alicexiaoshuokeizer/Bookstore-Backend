@@ -27,8 +27,11 @@ public class PurchaseController {
                 .body(purchaseService.makePurchase(requestDTO));
     }
 
-    @PutMapping("/{id}/refund")
+    // POST /api/purchases/{id}/refund
+    @PostMapping("/{id}/refund") // Updated HTTP method and route to match team blueprint
     public ResponseEntity<PurchaseResponseDTO> refundPurchaseOrder(@PathVariable Long id) {
         return ResponseEntity.ok(purchaseService.refundPurchase(id));
     }
+
 }
+
