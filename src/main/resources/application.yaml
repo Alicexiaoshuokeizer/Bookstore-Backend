@@ -1,43 +1,19 @@
-# 1. Base Application Settings
 spring:
   application:
-    # This names our project inside Spring Boot's internal system
     name: BookStoreBackend
-
-  # 2. Database Connectivity Setup (Requirement 4)
-  # FIX: This must have exactly 2 spaces of indentation, matching "application" above!
   datasource:
-    # The URL tells Spring Boot WHERE to find our database.
-    url: ${DB_URL:jdbc:mysql://localhost:3306/bookstore_db?allowPublicKeyRetrieval=true&useSSL=false}
-
-    # The username used to log into our MySQL Workbench server
-    username: ${DB_USER:root}
-
-    # The password used to log into our MySQL Workbench server (Safe, empty fallback)
-    password: ${DB_PASSWORD:}
-
-    # The Java driver helper that allows our code to talk to MySQL databases
+    url: jdbc:mysql://localhost:3306/bookstore_db?allowPublicKeyRetrieval=true&useSSL=false
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-
-  # 3. JPA and Hibernate settings (Object-to-Database Mapping)
   jpa:
     hibernate:
-      # Automatically updates or creates the tables in MySQL to match our entities
       ddl-auto: update
-
-    # If set to true, Spring Boot prints raw SQL queries into the console terminal
     show-sql: false
-
     properties:
       hibernate:
-        # Tells Hibernate to format its internal queries using MySQL rules
         dialect: org.hibernate.dialect.MySQLDialect
 
-# 4. Custom Business Logic Settings (Requirement 9.d)
-# NOTE: If this specific line still shows a yellow warning, it is perfectly safe to ignore.
-# Custom properties made by users require an extra metadata file to stop IntelliJ warnings,
-# but Spring Boot will still read this value flawlessly at runtime.
 app:
   validation:
-    # The minimum allowed price for any book saved into our store system catalog
     minimum-price: 0.0
