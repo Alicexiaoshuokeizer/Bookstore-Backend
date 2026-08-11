@@ -1,0 +1,53 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: bookstore-mysql
+#    restart automatically after crashing, unless the container is stopped by intention
+    restart: unless-stopped
+#    import credentials for db via secrets
+    secrets:
+      - db_root_password
+    environment:
+      MYSQL_DATABASE: bookstore_db
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      # use 3307 to avoid port conflict if there is another mysql db running in the physical machine
+      - "3306:3306"
+    volumes:
+      # keep all data in mysql_data in docker managed volume, so that data are preserved even container is stopped
+      - mysql_data:/var/lib/mysql
+#      initialized db
+      - ./src/main/resources/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./src/main/resources/db/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+#    database health check before connecting it to app container
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${DB_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+#app container
+  app:
+    container_name: bookstore-api
+  # Build the image using the Dockerfile in the current directory,
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bookstore_db
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge

@@ -8,13 +8,13 @@ spring:
   # FIX: This must have exactly 2 spaces of indentation, matching "application" above!
   datasource:
     # The URL tells Spring Boot WHERE to find our database.
-    url: ${DB_URL:jdbc:mysql://localhost:3306/bookstore_db?allowPublicKeyRetrieval=true&useSSL=false}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/bookstore_db?allowPublicKeyRetrieval=true&useSSL=false}
 
     # The username used to log into our MySQL Workbench server
-    username: ${DB_USER:root}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
 
     # The password used to log into our MySQL Workbench server (Safe, empty fallback)
-    password: ${DB_PASSWORD:}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
 
     # The Java driver helper that allows our code to talk to MySQL databases
     driver-class-name: com.mysql.cj.jdbc.Driver
