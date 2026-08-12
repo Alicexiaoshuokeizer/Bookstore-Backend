@@ -1,6 +1,6 @@
 # 🚀 App Deployment & Automation Pipeline Guide
 
-This document explains how our code automatically builds, tests, and deploys onto cloud servers every time a developer merges changes into the core `main` branch on GitHub.
+This document presents the technical proposal for the target deployment architecture and the Continuous Integration / Continuous Delivery (CI/CD) automation pipeline designed for the Bookstore Backend microservice.
 
 ---
 
@@ -8,10 +8,9 @@ This document explains how our code automatically builds, tests, and deploys ont
 
 Our target live cloud environment splits our application parts into separate, safe network spaces to keep our data secure:
 
-*   **Application Server**: Our containerized Java application runs inside an elastic orchestration environment (like AWS ECS or Kubernetes). It scales up automatically when traffic gets heavy and sits safely behind a public Load Balancer.
-*   **Database Isolation Node**: The MySQL server runs inside a strictly confidential private subnet. It cannot talk to the public internet directly and only answers connection requests sent from our application container.
-*   **Isolated Network Bridge**: All internal data traffic travels across an isolated virtual bridge network mapping (`bookstore-network`), matching our local Docker Compose setup.
-
+*   **Application Hosting Layer**: The containerized Spring Boot backend engine runs inside an orchestration tier (such as AWS ECS or a managed Kubernetes cluster). It scales dynamically behind a public-facing Application Load Balancer (ALB).
+*   **Persistent Storage Tier**: The MySQL relational database engine operates within a dedicated private subnet, completely isolated from direct public internet routing.
+*   **Virtual Container Network**: Traffic between the application engine container and the relational storage nodes routes entirely over an isolated virtual network bridge (`bookstore-network`), matching local Docker settings.
 ---
 
 ## 2. Automated Build Sequence (CI/CD Pipeline)
@@ -19,7 +18,9 @@ Our target live cloud environment splits our application parts into separate, sa
 Our build server executes five automated stages in a straight line every single time new code is pushed. If a single step fails, the pipeline stops instantly and blocks deployment to keep bugs off the server.
 
 ### 2.1 Visual Automation Mapping
-Our complete user experience wireframes, infrastructure topologies, and automated pipeline step layouts are mapped visually inside our team design space.
+Our complete team user layouts, cloud infrastructure maps, and automated build pipeline steps are designed visually.
+
+You can view the full graphical chart embedded directly inside the main project **README.md** file at the root of this repository.
 
 ---
 

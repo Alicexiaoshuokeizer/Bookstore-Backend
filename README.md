@@ -11,11 +11,6 @@ We designed the structure of this application using **Figma** to make sure the p
 ### 🎨 Visual Architecture Diagram
 ![System Architecture Diagram](./documentation/images/backend-architecture.png)
 
-You can view our visual layout map and database designs on the Figma community link below:
-
-👉 **[View our layout design on the Figma Community Hub](https://figma.com)**
-
----
 
 ## 🛠️ Tools You Need on Your Computer
 
