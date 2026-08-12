@@ -1,47 +1,34 @@
-# 📚 Project Summary & Requirements Specification
+# 📚 Project Summary & Rules Specification
 
-This document provides a comprehensive overview of the Bookstore Backend system application layer, its architectural requirements, and the technical strategies used to implement them.
-
----
-
-## 1. Executive Application Summary
-
-The **Bookstore Backend** is a lightweight, high-performance microservice built to manage a retail book inventory catalog. The application functions as a headless service (no front-end interface) exposing standard REST API endpoints. It allows corporate operators to safely ingest new book titles and retrieve individual catalog items.
-
-The service handles incoming request structures, runs core business validation rules, automatically prints contextual execution logs, and persistently reads and writes data to a secure relational MySQL database tier.
+This document explains what the Bookstore project does, who it is for, and the simple functional rules it must follow.
 
 ---
 
-## 2. System Requirements Matrix
+## 1. What is this Project?
 
-### 2.1 Functional Requirements (FR)
-*   **FR-1 (Data Schema)**: The application must store and track five core attributes for every book record: `Title` (Text string), `Author` (Text string), `ISBN` (Unique international tracking number string), `Price` (Decimal currency value), and `Stock` (Integer quantity value).
-*   **FR-2 (Data Ingestion)**: The system must expose a `POST` API endpoint at `/api/books` to allow incoming payloads to create and append a new book record inside the persistent storage layer.
-*   **FR-3 (Data Querying)**: The system must expose a `GET` API endpoint at `/api/books/{id}` to query and retrieve a single specific book entry using its automatically generated database primary tracking key (`id`).
-*   **FR-4 (Input Validation)**: The service layer must automatically validate data bounds before updating tables. Book titles must not be empty or blank, and book prices must evaluate greater than or equal to a minimum configurable threshold floor.
-*   **FR-5 (Error Masking)**: The application must catch validation issues or database missing exceptions gracefully, responding to clients with a uniform HTTP status code and a clean error message rather than standard raw server stack traces.
+The **Bookstore Backend** is a lightweight engine built to manage an online bookshop's inventory catalog and track customer sales orders. This application does not have a visual front-end user interface. Instead, it works entirely behind the scenes by exposing clean web links (REST APIs).
 
-### 2.2 Non-Functional Requirements (NFR)
-*   **NFR-1 (Observability)**: The application must write structural execution details to the terminal console (e.g., info logs on success, warn/error logs on exceptions) to make debugging straight-forward.
-*   **NFR-2 (Isomorphic Architecture)**: Database entity instances must cleanly represent object-oriented models (a 'books' database table row explicitly translates into a single 'Book' Java object).
-*   **NFR-3 (Containerization)**: The system must bundle all code execution dependencies into a single lightweight container image capable of running isolated alongside an ephemeral database service instance.
+Other developers (like front-end web developers or mobile app creators) can link their buttons to our service to allow users to add new books, check available stock, buy items, return items, or request cash refunds.
 
 ---
 
-## 3. Technical Achievement Strategy
+## 2. Basic Requirements Check
 
-To fully satisfy the requirements outlined above while maintaining high quality, the project uses the following unified software stack engineering architecture:
+### 2.1 Functional Requirements (What the system must do)
+*   **FR-1 (Book Information)**: The system must store five details for every book entry: an ID tracking number, a title, an author name, a price, and an available stock count. No missing or imaginary fields (like ISBN) are used.
+*   **FR-2 (Order Lifecycle)**: Every purchase order must track its current lifecycle status using simple words: `PENDING`, `CONFIRMED`, `RETURN`, or `REFUNDED`. It must use high-precision decimals (`BigDecimal`) to track financial totals so currency calculation math is never wrong.
+*   **FR-3 (Catalog Changes)**: Operators must be able to add new books (`POST`), view all books (`GET`), edit book details (`PUT`), and delete books (`DELETE`) using the `/api/books` routes.
+*   **FR-4 (Sales and Service Operations)**: Customers must be able to buy books (`POST /api/purchases`), ask for refunds (`POST /api/purchases/{id}/refund`), and log bookstore returns (`POST /api/returns`).
+*   **FR-5 (Inventory and Fraud Protection)**: The system must protect the shop catalog. If a book has 0 stock, it must block the purchase. If a purchase was already refunded, it must block a second refund attempt.
+*   **FR-6 (Friendly Error Handling)**: If a user types a wrong ID or requests an out-of-stock item, the app must show a clean, friendly text message with a clear code status (`404` or `409`) instead of crashing or showing ugly server code stack traces.
 
-| System Layer              | Technology Component         | Strategy Application Details                                                                                                             |
-|:--------------------------|:-----------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------|
-| **Core Framework**        | Spring Boot (v3.x) & Java 21 | Provides embedded Tomcat container layer, structured execution configuration management, and modern dependency injection.                |
-| **Web Service API**       | Spring Web MVC Starter       | Exposes REST controllers mapped via uniform annotations to safely parse JSON payloads and dispatch semantic HTTP responses.              |
-| **Data Persistence**      | Spring Data JPA (Hibernate)  | Eliminates tedious boilerplate SQL code. Connects structural Java objects straight to relational structures via automated repositories.  |
-| **Database System**       | MySQL Database Server        | Provides a secure, persistent relational management layer to store books.                                                                |
-| **Boilerplate Reduction** | Project Lombok               | Automatically generates constructor injections, builders, data transfer abstractions, and automated logging variables behind the scenes. |
+### 2.2 Non-Functional Requirements (How the system behaves)
+*   **NFR-1 (Clear Logging)**: The application must print status updates to the terminal screen (like info logs for success, and warn/error logs for failures) so developers can track actions instantly.
+*   **NFR-2 (Fail-Safe Code Execution)**: If an operation updates two database tables at the same time (like increasing book stock while changing an order status) and the second step fails, the system must undo the first step automatically (`@Transactional`) so data never gets corrupted.
+*   **NFR-3 (Easy Setup)**: The entire codebase must be packageable inside a single container script (Docker) so that any developer can start the application and database together instantly.
 
 ---
 
-## 4. Design & Modeling Artifacts
+## 3. Visual Layout Reference
 
-The comprehensive system architecture, database relational tracking bounds, and decoupled controller layer workflows were originally blueprinted and mapped visually inside **Figma** during the Week 1 requirements phase. A static rendering of this high-fidelity design layout is archived under `./documentation/images/backend-architecture.png`.
+All core architectural designs, database relationship maps, and controller path workflows were blueprinted visually inside **Figma** during the early planning phase. The file layout can be viewed inside our team's workspace folder design assets directory.
