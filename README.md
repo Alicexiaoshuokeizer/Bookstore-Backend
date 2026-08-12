@@ -1,85 +1,110 @@
-# 📚 Bookstore Backend Service Layer
+# 📚 Bookstore Backend Project
 
-A high-performance, containerized Spring Boot RESTful API designed to manage an enterprise book catalog, consumer profiles, and transaction lifecycles.
+This is a backend web service built with Java and Spring Boot. It manages a book shop catalog, tracks customers, and handles purchase orders.
 
 ---
 
-## 🏗️ System Architecture & Data Flow
+## 🏗️ How the Project is Structured
 
-Our system architecture was structurally blueprinted and verified using **Figma** during the initial design phase to enforce clear decoupling boundaries.
+We designed the structure of this application using **Figma** to make sure the parts of our code are cleanly separated.
 
-
-### 🎨 High-Fidelity Figma Structural Design
+### 🎨 Visual Architecture Diagram
 ![System Architecture Diagram](./documentation/images/backend-architecture.png)
 
+You can view our visual layout map and database designs on the Figma community link below:
 
-## 🛠️ Prerequisites & Environmental Configurations
-
-*   **Runtime Environment**: Java 25 LTS & Maven 3.9+
-*   **Virtualization Tools**: Docker Engine & Docker Compose v2+
-*   **Database Infrastructure**: MySQL 8.0 Relational Engine
-
-### Application Environment Variables (`application.yml`)
-The framework leverages dynamic environment fallback properties. You can easily configure or override these parameters through your terminal runtime context:
-
-| Configuration Property | Default Fallback Value                     | Purpose Description                                        |
-|:-----------------------|:-------------------------------------------|:-----------------------------------------------------------|
-| `DB_URL`               | `jdbc:mysql://localhost:3306/bookstore_db` | Relational server connection address string                |
-| `DB_USER`              | `root`                                     | Database administrator access profile name                 |
-| `DB_PASSWORD`          | `rootpassword`                             | Secured database credential access string                  |
-| `MIN_PRICE_LIMIT`      | `0.0`                                      | Custom business logic threshold value for price validation |
+👉 **[View our layout design on the Figma Community Hub](https://figma.com)**
 
 ---
 
-## 🏃 Local Execution & Deployment Quickstart
-### Pre-start:
-```bash
-cp .env.example .env
-nano .env 
-# fill in your database credentials in the text editor
-# ctl+x-> exit,  y->save, enter->exit editor
-```
-Or you can manually copy the `.env.example` file, change the file name to `.env` and fill in your database credentials 
+## 🛠️ Tools You Need on Your Computer
 
-### Option A: Local Orchestration Stack (Docker Compose)
-To compile the core source package code and spin up the complete multi-service environment (`bookstore-app:8080` and `bookstore-db:3306`) seamlessly inside the container network, run:
+*   **Java**: OpenJDK version 26
+*   **Build Tool**: Maven version 3.9 or newer
+*   **Containers**: Docker Desktop and Docker Compose
+*   **Database**: MySQL version 8.4
+
+### Configuration Settings (`application.yaml`)
+The application uses these default names to talk to your computer systems. You can change them if needed:
+
+| Setting Name | Default Value | What it is for |
+|:---|:---|:---|
+| `SPRING_DATASOURCE_URL` | `jdbc:mysql://localhost:3306/bookstore_db` | The connection address to find the MySQL database |
+| `SPRING_DATASOURCE_USERNAME` | `root` | The user name to log into the database |
+| `SPRING_DATASOURCE_PASSWORD` | *(Empty)* | The password to log into the database |
+| `app.validation.minimum-price` | `0.0` | The lowest price allowed for a book |
+
+---
+
+## 🏃 How to Run the Project Locally
+
+### Step 1: Create your environment file
+1. Copy the sample file in your project folder to create a new file named `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Open the `.env` file in your text editor and type your database passwords:
+   ```ini
+   DB_USERNAME=root
+   DB_PASSWORD=your_secure_password
+   DB_ROOT_PASSWORD=your_secure_root_password
+   ```
+
+### Option A: Run everything automatically with Docker (Recommended)
+This command downloads the database, builds your Java code, and automatically fills your system with **mock seed data** (15 books, 10 customers, and 20 sample sales):
 
 ```bash
-# Compile dependencies and launch the fully isolated architecture stack
+# Stop old versions and start the clean application stack
 docker compose down -v
 docker compose up --build -d
 
-# Verify that both structural application containers are running and healthy
+# Check that your application is running
 docker ps
 ```
+Once it finishes, the application will be ready to test at `http://localhost:8080`.
 
-### Option B: Bare-Metal Local Development Setup
-If you want to run the core backend logic natively on your host machine while linking to an external or containerized database container instance:
+### Option B: Run the database in Docker and the code manually
+If you want to run the Java code directly on your computer instead of inside a container:
 
-1.  Launch only the database daemon container:
+1.  Start only the MySQL database container:
     ```bash
-    docker-compose up -d mysqldb
+    docker compose up -d mysql
     ```
-2.  Boot up your Spring Boot runtime service using the Maven wrapper:
+2.  Start your Spring Boot application using the wrapper command:
     ```bash
     set -a
     source .env
     set +a
 
-    export SPRING_DATASOURCE_USERNAME="$DB_USERNAME"
-    export SPRING_DATASOURCE_PASSWORD="$DB_PASSWORD"
-    
     ./mvnw spring-boot:run
     ```
 
 ---
 
-## 📖 Interactive OpenAPI / Swagger Reference
+## 🧪 How to Run Automated Tests
+You can run our automated testing suite at any time. The tests use mock database tools, so you do **not** need a real database running on your computer for the tests to pass:
 
-Once the backend application finishes initialization, the active endpoint configurations are exposed automatically. You can read API parameters, inspect payloads, and send test requests through your web browser:
+```bash
+./mvnw clean test
+```
+
+---
+
+## 📖 How to Test the API Endpoints in Your Browser
+
+Once the application is running, you can view, read, and test every single endpoint using the interactive **Swagger UI** page in your web browser:
 
 👉 **[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)**
 
-### Core Monitored Endpoint Routing (For Assignment Assessment)
-*   **Add New Book Asset**: `POST /api/books` (Expects structural JSON payload body, returns `201 Created`)
-*   **Fetch Single Catalog Record**: `GET /api/books/{id}` (Returns `200 OK` or parses an elegant `404 Not Found`)
+### Core API Endpoint Reference Table
+
+| HTTP Action | API Path                     | What it does                           | Expected Result                |
+|:------------|:-----------------------------|:---------------------------------------|:-------------------------------|
+| **POST**    | `/api/books`                 | Add a new book to the store catalog    | `201 Created`                  |
+| **GET**     | `/api/books`                 | Get a list of every book in the shop   | `200 OK`                       |
+| **GET**     | `/api/books/{id}`            | Find a single book using its ID number | `200 OK` / `404 Not Found`     |
+| **PUT**     | `/api/books/{id}`            | Edit the details of an existing book   | `200 OK` / `404 Not Found`     |
+| **DELETE**  | `/api/books/{id}`            | Delete a book completely from the shop | `204 No Content`               |
+| **POST**    | `/api/purchases`             | Buy a book (Fails if out of stock)     | `201 Created` / `409 Conflict` |
+| **POST**    | `/api/purchases/{id}/refund` | Process a customer refund request      | `200 OK` / `409 Conflict`      |
+| **POST**    | `/api/returns`               | Process a physical book return         | `200 OK` / `409 Conflict`      |
