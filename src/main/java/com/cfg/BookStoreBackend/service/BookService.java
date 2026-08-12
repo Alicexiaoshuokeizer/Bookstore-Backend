@@ -26,12 +26,12 @@ import java.util.List;
 // constructor injection via lombok to indicate dependency of any final field variables
 @RequiredArgsConstructor
 public class BookService {
-  // fields
+    // fields
     // create book and purchase repository for server to communicate with db
     private final BookRepository bookRepository;
     private final PurchaseRepository purchaseRepository;
 
-  // methods
+    // methods
     // add new book to books table via bookRepository
     // if success, returns BookResponseDTO of the newly added book (never the raw entity)
     // if fails, returns log error info in console and throw InternalServerError error
@@ -166,6 +166,7 @@ public class BookService {
         try {
             // update and save book stock
             book.setStock(book.getStock() + purchase.getQuantity());
+            bookRepository.save(book);
 
             // update and save purchase status
             purchase.setStatus(PurchaseStatus.RETURN);
@@ -180,5 +181,3 @@ public class BookService {
         }
     }
 }
-
-
