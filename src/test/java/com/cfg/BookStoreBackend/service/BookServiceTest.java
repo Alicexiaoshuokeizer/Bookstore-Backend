@@ -20,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,6 +39,90 @@ class BookServiceTest {
     // Creates BookService and injects the mocked repo into it.
     @InjectMocks
     private BookService bookService;
+
+    // GET test, getAllBooks should return every book in the repository as BookResponseDTOs
+    @Test
+    void getAllBooksShouldReturnListOfBookResponseDTOWhenBooksExist() {
+        // Assign
+        Book book = new Book();
+        book.setId(1L);
+        book.setTitle("Test Book");
+        book.setAuthor("Test Author");
+        book.setPrice(9.99);
+        book.setStock(5);
+
+        when(bookRepository.findAll()).thenReturn(List.of(book));
+
+        // Act
+        List<BookResponseDTO> result = bookService.getAllBooks();
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals(book.getId(), result.get(0).getId());
+        assertEquals(book.getTitle(), result.get(0).getTitle());
+
+        verify(bookRepository, times(1)).findAll();
+    }
+
+    // GET test, getAllBooks should return an empty list rather than an error
+    // when the catalog has no books - an empty catalog is a valid state, not a failure
+    @Test
+    void getAllBooksShouldReturnEmptyListWhenNoBooksExist() {
+        // Assign
+        when(bookRepository.findAll()).thenReturn(List.of());
+
+        // Act
+        List<BookResponseDTO> result = bookService.getAllBooks();
+
+        // Assert
+        assertTrue(result.isEmpty());
+
+        verify(bookRepository, times(1)).findAll();
+    }
+
+    // GET test, getBookById should return the matching book as a BookResponseDTO
+    @Test
+    void getBookByIdShouldReturnBookResponseDTOWhenBookExists() {
+        // Assign
+        Book book = new Book();
+        book.setId(1L);
+        book.setTitle("Test Book");
+        book.setAuthor("Test Author");
+        book.setPrice(9.99);
+        book.setStock(5);
+
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+
+        // Act
+        BookResponseDTO result = bookService.getBookById(1L);
+
+        // Assert
+        assertEquals(book.getId(), result.getId());
+        assertEquals(book.getTitle(), result.getTitle());
+        assertEquals(book.getAuthor(), result.getAuthor());
+        assertEquals(book.getPrice(), result.getPrice());
+        assertEquals(book.getStock(), result.getStock());
+
+        verify(bookRepository, times(1)).findById(1L);
+    }
+
+    // GET test, getBookById should throw NotFoundException when no book matches the given id,
+    // so the controller/GlobalExceptionHandler can return a 404 instead of a null slipping through
+    @Test
+    void getBookByIdShouldThrowNotFoundExceptionWhenBookDoesNotExist() {
+        // Assign
+        when(bookRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> bookService.getBookById(99L)
+        );
+
+        assertEquals("Book not found with id: 99", exception.getMessage());
+
+        verify(bookRepository, times(1)).findById(99L);
+    }
 
     // PUT test, update book should update an existing book.
     @Test
